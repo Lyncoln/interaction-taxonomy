@@ -1,0 +1,1437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interaction Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F1F2F6; --surface:#FFFFFF; --surface-2:#F8F9FB;
+  --ink:#161821; --ink-2:#4A4F5E; --ink-3:#777D8E;
+  --rule:#DADDE6; --rule-soft:#E8EAF0;
+  --int:#1F7A68; --int-soft:#E3F2EE; --int-ink:#17614F;
+  --act:#3B4CC0; --act-soft:#E9ECFA; --act-ink:#2E3C9E;
+  --out:#A5690A; --out-soft:#FAF0DC; --out-ink:#7F5006;
+  --warn:#B40426; --warn-soft:#FAEBEE;
+  --shadow:0 10px 30px rgba(22,24,33,.12);
+  --p0:#8A7CC2; --p1:#D07A8C; --p2:#6C8FB3;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1016; --surface:#161922; --surface-2:#1B1F29;
+    --ink:#E8EAF1; --ink-2:#A8AEBE; --ink-3:#7C8396;
+    --rule:#2A2F3C; --rule-soft:#222733;
+    --int:#5CC2A8; --int-soft:#13271F; --int-ink:#7FD6BF;
+    --act:#8B99EE; --act-soft:#1C2135; --act-ink:#A3AEF3;
+    --out:#E3B462; --out-soft:#2A2213; --out-ink:#EDC57F;
+    --warn:#EC8195; --warn-soft:#2C1A20;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+    --p0:#A99DDB; --p1:#E394A3; --p2:#8FB0D0;
+  }
+}
+:root[data-theme="dark"]{
+  --p0:#A99DDB; --p1:#E394A3; --p2:#8FB0D0;
+  --paper:#0E1016; --surface:#161922; --surface-2:#1B1F29;
+  --ink:#E8EAF1; --ink-2:#A8AEBE; --ink-3:#7C8396;
+  --rule:#2A2F3C; --rule-soft:#222733;
+  --int:#5CC2A8; --int-soft:#13271F; --int-ink:#7FD6BF;
+  --act:#8B99EE; --act-soft:#1C2135; --act-ink:#A3AEF3;
+  --out:#E3B462; --out-soft:#2A2213; --out-ink:#EDC57F;
+  --warn:#EC8195; --warn-soft:#2C1A20;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 "IBM Plex Sans",-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--act);outline-offset:2px}
+.wrap{max-width:1400px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{margin:0;line-height:1.2;text-wrap:balance}
+h1{font-family:Spectral,Georgia,serif;font-weight:600;font-size:clamp(1.8rem,4.2vw,2.5rem);letter-spacing:-.015em}
+h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:1.45rem}
+h3{font-size:1rem;font-weight:600}
+p{margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.lab{font:500 .68rem "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+svg.ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- header */
+header.top{background:var(--surface);border-bottom:1px solid var(--rule)}
+.top-inner{display:grid;gap:18px;padding-block:28px 0}
+.titlerow{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.sub{color:var(--ink-2);max-width:70ch;margin-top:6px}
+.langs{display:flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden}
+.langs button{border:0;background:none;padding:5px 12px;font:500 .78rem "IBM Plex Mono",monospace;cursor:pointer;color:var(--ink-3)}
+.langs button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+.link{display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:6px;min-width:0;flex:1 1 200px}
+.link b{display:block;font-size:.95rem}
+.link span{display:block;font-size:.82rem;color:var(--ink-2)}
+.link .num{font:500 1.35rem Spectral,serif;margin-left:auto;padding-left:8px}
+.link.i{background:var(--int-soft);color:var(--int-ink)} .link.a{background:var(--act-soft);color:var(--act-ink)} .link.o{background:var(--out-soft);color:var(--out-ink)}
+.link svg.ic{width:26px;height:26px}
+.arrow{align-self:center;color:var(--ink-3);font-size:1.2rem}
+.facts{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.84rem;color:var(--ink-2)}
+.facts b{color:var(--ink);font-weight:600}
+nav.tabs{display:flex;gap:4px;margin-top:4px}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;cursor:pointer;color:var(--ink-3);font-weight:500}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+
+/* ---------- toolbar */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding-block:16px}
+.search{flex:1 1 240px;min-width:0;max-width:420px;padding:8px 12px;border:1px solid var(--rule);border-radius:4px;background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem}
+.selpath{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.84rem;color:var(--ink-2)}
+.clear{border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:.78rem;cursor:pointer}
+.colswitch{display:none;gap:4px;width:100%}
+.colswitch button{flex:1;border:1px solid var(--rule);background:var(--surface);padding:7px;border-radius:4px;font-size:.85rem;cursor:pointer}
+.colswitch button[aria-pressed="true"].i{background:var(--int);color:#fff;border-color:var(--int)}
+.colswitch button[aria-pressed="true"].a{background:var(--act);color:#fff;border-color:var(--act)}
+.colswitch button[aria-pressed="true"].o{background:var(--out);color:#fff;border-color:var(--out)}
+
+/* ---------- explorer */
+.explorer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding-bottom:40px;align-items:start}
+.explorer.withdetail{grid-template-columns:repeat(3,minmax(0,1fr)) 420px}
+.col{background:var(--surface);border:1px solid var(--rule);border-radius:6px;display:flex;flex-direction:column;min-width:0;max-height:calc(100vh - 150px);min-height:480px}
+.colhead{padding:14px 14px 10px;border-bottom:1px solid var(--rule-soft);display:grid;gap:8px;min-width:0}
+.colhead > *{min-width:0}
+.colhead .t{display:flex;gap:9px;align-items:center}
+.colhead h2{font-size:1.2rem}
+.colhead .cnt{margin-left:auto;font:.78rem "IBM Plex Mono",monospace;color:var(--ink-3)}
+.col.i .colhead .t{color:var(--int-ink)} .col.a .colhead .t{color:var(--act-ink)} .col.o .colhead .t{color:var(--out-ink)}
+.col.i{border-top:3px solid var(--int)} .col.a{border-top:3px solid var(--act)} .col.o{border-top:3px solid var(--out)}
+.groupby{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:.76rem;color:var(--ink-3)}
+.groupby button{border:1px solid var(--rule);background:none;border-radius:999px;padding:2px 9px;cursor:pointer;font-size:.76rem;color:var(--ink-2)}
+.groupby button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.list{overflow-y:auto;padding:6px 8px 12px;flex:1}
+.grp{margin-top:8px}
+.grp-h{display:flex;gap:7px;align-items:center;padding:6px 6px 4px;font:500 .72rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.grp-h svg.ic{width:15px;height:15px}
+.item{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:5px;padding:7px 8px;cursor:pointer;transition:opacity .15s,background .15s}
+.item:hover{background:var(--surface-2)}
+.item .ico{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;flex:none}
+.col.i .ico{background:var(--int-soft);color:var(--int)} .col.a .ico{background:var(--act-soft);color:var(--act)} .col.o .ico{background:var(--out-soft);color:var(--out)}
+.item .txt{flex:1;min-width:0;display:grid;gap:2px}
+.item .nm{min-width:0;font-size:.93rem;line-height:1.3}
+.item .row2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.item .d2{display:inline-flex;gap:4px;align-items:center;font-size:.72rem;color:var(--ink-3)}
+.item .d2 svg.ic{width:13px;height:13px}
+.dimslider{display:flex;align-items:center;gap:6px;font-size:.78rem;min-width:0}
+.dimslider .lab2{font:500 .62rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);width:52px;flex:none;line-height:1.15}
+.dimslider .arw{border:1px solid var(--rule);background:var(--surface);border-radius:4px;width:22px;height:22px;line-height:1;cursor:pointer;color:var(--ink-2);flex:none;padding:0}
+.dimslider .arw:hover{border-color:var(--ink-3)}
+.dimslider .dname{flex:1;min-width:0;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dimslider .dots{display:flex;gap:3px;flex:none}
+.dimslider .dots i{width:5px;height:5px;border-radius:50%;background:var(--rule);display:block}
+.dimslider .dots i.un{background:none;border:1px solid var(--rule)}
+.dimslider .dots i.on{background:var(--ink-3)}
+.dvals{font-size:.72rem;color:var(--ink-3);line-height:1.4}
+.dvals b{color:var(--warn);font-weight:500}
+.item .d2 .k{color:var(--ink-3)}
+.col.i .item .nm{font-family:"IBM Plex Mono",monospace;font-size:.88rem}
+.item .meta{margin-left:auto}
+.item .meta{font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+.item .meta.gap{color:var(--warn)}
+.list.hasSel .item{opacity:.3}
+.list.hasSel .item.l1,.list.hasSel .item.l2,.list.hasSel .item.sel{opacity:1}
+.col.i .item.l1{background:var(--int-soft)} .col.a .item.l1{background:var(--act-soft)} .col.o .item.l1{background:var(--out-soft)}
+.item.l2{border-style:dashed;border-color:var(--rule)}
+.col.i .item.sel{border-color:var(--int);background:var(--int-soft)} .col.a .item.sel{border-color:var(--act);background:var(--act-soft)} .col.o .item.sel{border-color:var(--out);background:var(--out-soft)}
+.item.sel .ico{color:#fff} .col.i .item.sel .ico{background:var(--int)} .col.a .item.sel .ico{background:var(--act)} .col.o .item.sel .ico{background:var(--out)}
+.empty{padding:20px;color:var(--ink-3);font-size:.85rem;text-align:center}
+
+/* ---------- detail */
+.detail{background:var(--surface);border:1px solid var(--rule);border-radius:6px;max-height:calc(100vh - 150px);overflow-y:auto;position:sticky;top:12px}
+.detail[hidden]{display:none}
+.dhead{padding:18px 20px 14px;border-bottom:1px solid var(--rule-soft);display:grid;gap:10px;position:sticky;top:0;background:var(--surface);z-index:1}
+.dhead .row{display:flex;gap:10px;align-items:center}
+.dhead .ico{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;color:#fff;flex:none}
+.dhead .ico svg.ic{width:22px;height:22px}
+.dhead h2{font-size:1.4rem}
+.dhead h2.mono{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:1.25rem}
+.x{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--ink-3);font-size:1.3rem;line-height:1;padding:4px 6px}
+.dbody{padding:16px 20px 24px;display:grid;gap:22px}
+.dbody section{display:grid;gap:8px}
+.lead{font-size:.95rem;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;gap:6px;align-items:center;padding:3px 9px 3px 7px;border-radius:999px;font-size:.8rem;border:1px solid var(--rule);background:var(--surface-2);color:var(--ink-2)}
+.chip svg.ic{width:15px;height:15px}
+.chip .k{color:var(--ink-3)}
+button.chip{cursor:pointer}
+button.chip:hover{border-color:var(--ink-3)}
+.chip.i{background:var(--int-soft);color:var(--int-ink);border-color:transparent;font-family:"IBM Plex Mono",monospace}
+.chip.a{background:var(--act-soft);color:var(--act-ink);border-color:transparent}
+.chip.o{background:var(--out-soft);color:var(--out-ink);border-color:transparent}
+.why{display:grid;gap:10px}
+.src{display:grid;gap:4px;padding-left:12px;border-left:3px solid var(--rule)}
+.src.D{border-color:var(--ink-2)} .src.X{border-color:var(--warn)}
+.src .who{font-size:.84rem;color:var(--ink)} .src .who b{font-weight:600}
+.src .who .role{font:500 .68rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-left:6px}
+.src.X .role{color:var(--warn)}
+blockquote{margin:0;font:italic .95rem/1.5 Spectral,Georgia,serif;color:var(--ink);overflow-wrap:anywhere}
+.loc{font:.72rem "IBM Plex Mono",monospace;color:var(--ink-3)}
+.callout{padding:10px 12px;border-radius:5px;background:var(--warn-soft);color:var(--ink);font-size:.86rem}
+.note{font-size:.86rem;color:var(--ink-2);background:var(--surface-2);border-radius:5px;padding:10px 12px}
+.impl{border:1px solid var(--rule-soft);border-radius:6px;padding:10px 12px;display:grid;gap:7px}
+.impl .ih{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.84rem}
+.impl .ih b{font-weight:600}
+.surf{display:inline-flex;gap:4px;align-items:center;font-size:.72rem;color:var(--ink-3);margin-left:auto}
+.surf svg.ic{width:14px;height:14px}
+.seq{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.seq .sep{color:var(--ink-3);font-size:.8rem}
+.orig{font-size:.74rem;color:var(--ink-3)}
+.orig.T{color:var(--warn)}
+.prod{display:grid;gap:4px;padding:8px 0;border-top:1px solid var(--rule-soft)}
+.prod:first-of-type{border-top:0}
+.backdrop{display:none}
+
+/* ---------- dims & sources tabs */
+.page{padding-block:24px 60px;display:grid;gap:34px}
+.dimsec{display:grid;gap:12px}
+.dimsec > header{display:flex;gap:10px;align-items:center}
+.dimsec.i > header{color:var(--int-ink)} .dimsec.a > header{color:var(--act-ink)} .dimsec.o > header{color:var(--out-ink)}
+.dimsec > p{color:var(--ink-2);max-width:72ch;font-size:.92rem}
+.dimgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.dim{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px 16px;display:grid;gap:10px;align-content:start}
+.dimsec.i .dim{border-top:3px solid var(--int)} .dimsec.a .dim{border-top:3px solid var(--act)} .dimsec.o .dim{border-top:3px solid var(--out)}
+.dim .used{font:500 .66rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.sugg{margin-top:10px;padding-top:14px;border-top:1px dashed var(--rule);display:grid;gap:8px}
+.sugg .dim{background:var(--surface-2);border-style:dashed;border-top-style:dashed!important;border-top-width:1px!important;border-top-color:var(--rule)!important}
+.sugnote{font-size:.85rem;color:var(--ink-3);max-width:72ch}
+.refs{display:grid;gap:14px;max-width:900px}
+.ref{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px 16px;display:grid;gap:4px}
+.ref b{font-weight:600}
+.legend{display:grid;gap:8px;max-width:900px;font-size:.9rem;color:var(--ink-2)}
+
+.simgo{justify-self:start;border:1px solid var(--rule);background:var(--surface-2);border-radius:999px;padding:4px 12px;font-size:.8rem;cursor:pointer;color:var(--ink-2)}
+.simgo:hover{border-color:var(--ink-3);color:var(--ink)}
+.simhead{display:grid;gap:6px}.simhead p{color:var(--ink-2);max-width:78ch;font-size:.93rem}
+.simgrid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+.simctl{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:16px;display:grid;gap:14px}
+.simpick{display:grid;gap:6px}
+.simpick > span{display:flex;gap:7px;align-items:center;font:500 .72rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
+.simpick.i > span{color:var(--int-ink)} .simpick.a > span{color:var(--act-ink)} .simpick.o > span{color:var(--out-ink)}
+.simpick svg.ic{width:16px;height:16px}
+.simpick select{width:100%;font:inherit;font-size:.9rem;padding:7px 8px;border:1px solid var(--rule);border-radius:4px;background:var(--surface);color:var(--ink)}
+.simpick.i select{border-left:3px solid var(--int)} .simpick.a select{border-left:3px solid var(--act)} .simpick.o select{border-left:3px solid var(--out)}
+.simnote{font-size:.75rem;color:var(--ink-3)}
+.simbtns{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.simplay{border:0;background:var(--ink);color:var(--surface);border-radius:999px;padding:8px 18px;font-weight:600;cursor:pointer}
+.simloop{font-size:.82rem;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.simstatus{display:grid;gap:4px}
+.simtag{font-size:.82rem;padding:8px 10px;border-radius:5px;line-height:1.4}
+.simtag.ok{background:var(--int-soft);color:var(--int-ink)} .simtag.team{background:var(--out-soft);color:var(--out-ink)} .simtag.hypo{background:var(--warn-soft);color:var(--warn)}
+.simstage{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px;display:grid;gap:10px;min-width:0}
+.simstage svg{width:100%;height:auto;display:block}
+.simprog{height:3px;background:var(--rule-soft);border-radius:2px;overflow:hidden}.simprog i{display:block;height:100%;width:0;background:var(--ink-3)}
+.simsteps{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.84rem}
+.simstep{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border-radius:999px;border:1px solid var(--rule);color:var(--ink-3);transition:all .2s}
+.simstep b{font:500 .66rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
+.simstep svg.ic{width:15px;height:15px}
+.simstep.i.on{background:var(--int-soft);color:var(--int-ink);border-color:var(--int)}
+.simstep.a.on{background:var(--act-soft);color:var(--act-ink);border-color:var(--act)}
+.simstep.o.on{background:var(--out-soft);color:var(--out-ink);border-color:var(--out)}
+.simsteps .sep{color:var(--ink-3)}
+.simread{margin:0;font-size:.88rem;color:var(--ink-2);background:var(--int-soft);border-radius:5px;padding:8px 12px;line-height:1.45}
+.simread b{display:block;font:500 .7rem 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.04em;color:var(--int-ink);margin-bottom:2px}
+.simread.weak{background:var(--warn-soft)} .simread.weak b{color:var(--warn)}
+.simstory{margin:0;font-size:.88rem;color:var(--ink-2);background:var(--out-soft);border-radius:5px;padding:8px 12px}
+@media (max-width:900px){ .simgrid{grid-template-columns:1fr} }
+@media (max-width:1180px){
+  .explorer.withdetail{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .detail{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);max-height:none;border-radius:0;z-index:30;box-shadow:var(--shadow);padding-top:env(safe-area-inset-top,0px)}
+  .backdrop.on{display:block;position:fixed;inset:0;background:rgba(10,12,18,.35);z-index:29}
+}
+@media (max-width:760px){
+  .colswitch{display:flex}
+  .explorer,.explorer.withdetail{grid-template-columns:1fr}
+  .col{display:none;max-height:none;min-height:0}
+  .col.show{display:flex}
+  .list{overflow:visible}
+  .arrow{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="titlerow">
+      <div>
+        <h1 id="title"></h1>
+        <p class="sub" id="subtitle"></p>
+      </div>
+    </div>
+    <div class="chain" id="chain"></div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main id="main"></main>
+<div class="backdrop" id="backdrop"></div>
+
+<script id="data" type="application/json">{"en": {"interactions": [{"id": "I01", "name": "click", "desc": "Press and release on a point.", "marks": {"YI": "C", "GZ": "C", "MU": "C", "RA": "C", "DP": "C"}, "ev": [{"src": "YI", "loc": "§4.6", "q": "“clicking on check boxes”"}, {"src": "GZ", "loc": "§4", "q": "“E9 : mouse-click to submit”"}, {"src": "MU", "loc": "§11.4.1", "q": "“a mouse click produces one kind of selection”"}, {"src": "DP", "loc": "§3.1.3", "q": "“clicking on a checkbox to toggle filtering”"}], "note": "", "dims": {"mod": "hand", "dev": "mouse", "cont": "discrete"}}, {"id": "I02", "name": "double-click", "desc": "Two clicks in a row on the same point.", "marks": {"YI": "C", "GZ": "C", "MU": "", "RA": "", "DP": ""}, "ev": [{"src": "GZ", "loc": "§5.1", "q": "“(1) double click on the map”"}, {"src": "YI", "loc": "§4.7", "q": "“In Vizster, double clicking a node causes expansion of the node”"}], "note": "", "dims": {"mod": "hand", "dev": "mouse", "cont": "discrete"}}, {"id": "I03", "name": "right-click", "desc": "Click with the secondary button.", "marks": {"YI": "", "GZ": "C", "MU": "C", "RA": "", "DP": ""}, "ev": [{"src": "GZ", "loc": "§4", "q": "“E2 : mouse-right-click to select open a popup menu”"}, {"src": "MU", "loc": "§11.4.1", "q": "“if the mouse has several buttons there are several kinds of clicks”"}], "note": "", "dims": {"mod": "hand", "dev": "mouse", "cont": "discrete"}}, {"id": "I04", "name": "drag", "desc": "Press, move and release.", "marks": {"YI": "C", "GZ": "C", "MU": "C", "RA": "", "DP": "C"}, "ev": [{"src": "YI", "loc": "§4.2", "q": "“the user grabs the scene and moves it with a mouse”"}, {"src": "GZ", "loc": "§5.1", "q": "“(2) drag a zoom slider”"}, {"src": "MU", "loc": "§11.3", "q": "“drag and drop interactions”"}, {"src": "DP", "loc": "§6.2", "q": "“drag an icon to a certain location”"}], "note": "", "dims": {"mod": "hand", "dev": "mouse", "cont": "continuous"}}, {"id": "I05", "name": "brush / lasso", "desc": "Drag while drawing a region that encloses elements.", "marks": {"YI": "", "GZ": "C", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§3.1.3", "q": "“mouse drags to perform a lasso selection”"}, {"src": "GZ", "loc": "§4", "q": "“E1 : mouse-drag to select all companies”"}], "note": "A drag with region semantics. Clashes with GZ’s Brush action (= highlight).", "dims": {"mod": "hand", "dev": "mouse", "cont": "continuous"}}, {"id": "I06", "name": "hover", "desc": "Cursor passes or rests over the object without pressing.", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": "C"}, "ev": [{"src": "MU", "loc": "§11.4.1", "q": "“a mouse hover, where the cursor simply passes over the object”"}, {"src": "YI", "loc": "§4.5", "q": "tooltip “when a mouse cursor hovers over a data item”"}, {"src": "DP", "loc": "§6.2", "q": "“move mouse cursor on top”"}], "note": "MU §6.8 distinguishes hover with and without dwell time.", "dims": {"mod": "hand", "dev": "mouse", "cont": "continuous"}}, {"id": "I07", "name": "key", "desc": "Press a key or shortcut.", "marks": {"YI": "", "GZ": "C", "MU": "C", "RA": "C", "DP": "C"}, "ev": [{"src": "GZ", "loc": "§4", "q": "“E3 ...E8 : keyboard-events to set sorting parameters”"}, {"src": "MU", "loc": "§11.4.1", "q": "“key presses can be added to the mix”"}, {"src": "RA", "loc": "", "q": "keystroke-level capture"}, {"src": "DP", "loc": "§3.1.2", "q": "keyboard"}], "note": "", "dims": {"mod": "hand", "dev": "keyboard", "cont": "discrete"}}, {"id": "I08", "name": "type", "desc": "Enter free text.", "marks": {"YI": "C", "GZ": "", "MU": "C", "RA": "", "DP": ""}, "ev": [{"src": "YI", "loc": "§4.6", "q": "“when a user types “K”, only baby names starting with K are shown”"}, {"src": "MU", "loc": "§10.4.5", "q": "“using search, where a text string is typed into a control panel”"}], "note": "", "dims": {"mod": "hand", "dev": "keyboard", "cont": "discrete"}}, {"id": "I09", "name": "touch", "desc": "Touch the screen.", "marks": {"YI": "", "GZ": "", "MU": "C", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§6.2 (table)", "q": "Highlight data point “1) click on*, 2) touch*”"}, {"src": "MU", "loc": "§11.4.1", "q": "“Some kinds of touch screens provide hover information, but others don’t”"}], "note": "", "dims": {"mod": "hand", "dev": "touch", "cont": "discrete"}}, {"id": "I10", "name": "pinch", "desc": "Two-finger pinch interaction.", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": ""}, "ev": [{"src": "", "loc": "", "q": "No source. Comes from our 2026-09-18 figure."}], "note": "No support in the 5 sources — candidate for removal or for a source from snowballing.", "dims": {"mod": "hand", "dev": "touch", "cont": "continuous"}}, {"id": "I11", "name": "scroll", "desc": "Scroll (mouse wheel or two fingers).", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": ""}, "ev": [{"src": "", "loc": "", "q": "No source as a gesture. YI §4.2 cites “scrollbars” (a widget) and MU uses “scrolling” as a synonym of Pan (an action)."}], "note": "No support as a interaction.", "dims": {"mod": "hand", "dev": "mouse", "cont": "continuous"}}, {"id": "I12", "name": "draw", "desc": "Freehand drawing.", "marks": {"YI": "C", "GZ": "", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "YI", "loc": "§4.6", "q": "QuerySketch “allows users to draw a line graph freehand”"}, {"src": "DP", "loc": "§6.2 (table)", "q": "Zooids “map dimension to color using paint”"}], "note": "", "dims": {"mod": "hand", "dev": "pen", "cont": "continuous"}}, {"id": "I13", "name": "point", "desc": "Point with a finger, without touching.", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§6.2 (table)", "q": "Mark data point as interesting “1) point with finger”"}], "note": "DP only (Zooids).", "dims": {"mod": "hand", "dev": "sensor", "cont": "discrete"}}, {"id": "I14", "name": "place object", "desc": "Place, move or swap a physical object (token, sticker, glass).", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§6.2 (tables)", "q": "“stick object besides”, “put points in boxes”, “add token”, “replace, recolor token”"}], "note": "DP only (Zooids, Token). Tangible interaction.", "dims": {"mod": "hand", "dev": "tangible", "cont": "discrete"}}, {"id": "I15", "name": "voice", "desc": "Spoken command.", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§6.2", "q": "“sort data points by: clicking on a button, speaking a voice command, or rearranging data points manually”"}, {"src": "DP", "loc": "§3.1.2", "q": "speech"}], "note": "", "dims": {"mod": "voice", "dev": "microphone", "cont": "discrete"}}, {"id": "I16", "name": "gaze", "desc": "Eye movement.", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§3.1.2", "q": "“Many modalities (e.g., gaze, head) tend to be overlooked in visualization”"}], "note": "DP §5.2, scenario 4, also uses gaze.", "dims": {"mod": "gaze", "dev": "eyetracker", "cont": "continuous"}}, {"id": "I17", "name": "body / head", "desc": "Head or body movement.", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "DP", "loc": "§3.1.2", "q": "“body movements [19, 74], speech [74], head [79] and eye movement”"}], "note": "", "dims": {"mod": "body", "dev": "sensor", "cont": "continuous"}}, {"id": "I18", "name": "approach", "desc": "Move closer to the display (proximity).", "marks": {"YI": "", "GZ": "", "MU": "C", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.4.1", "q": "“multiple levels of proximity, such as nearby as an intermediate state between hover and distant”"}], "note": "MU notes this is rare in hardware.", "dims": {"mod": "body", "dev": "sensor", "cont": "continuous"}}], "actions": [{"id": "A01", "name": "Query", "def": "Bring additional data into the visualization. “A request to bring additional data into a visualization.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "C", "DP": "D"}, "input": "data concept · summary function · constraint list", "note": "", "names": {"GZ": "Query", "DP": "query (processing data actions)", "RA": "\"query executions\""}, "dims": {"intent": "explore", "visref": "novisref", "element": ["dataset"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "YI §4.2: Explore is “examine a different subset of data cases”; a Query brings a different subset."}, {"id": "A02", "name": "Filter", "def": "Reduce the set of displayed elements by a condition. “A request to reduce the data set being visualized.” (GZ) / “some elements are simply eliminated” (MU)", "defsrc": "GZ Tab. 1 · MU §13.3", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "C", "DP": "D"}, "input": "constraint list", "note": "AMBIGUOUS — the sources disagree on WHAT Filter changes. YI: the underlying data does not change. GZ: data + visual change. DP: a processing DATA action. MU: Reduce, with no reference to underlying data. The action is one; the disagreement is about the target.", "names": {"GZ": "Filter", "MU": "Filter (item/attribute)", "DP": "filter", "YI": "dynamic query controls, keyboard filtering, QuerySketch", "RA": "\"filtering\""}, "dims": {"intent": "filter", "visref": "novisref", "element": ["item", "attribute"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.6 treats dynamic queries, Name Voyager and QuerySketch as Filter."}, {"id": "A03", "name": "Select / subset (data)", "def": "Select a subset of records as an operation on the data entity. “select, subset” among the processing data actions.", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "selection criterion over records", "note": "AMBIGUOUS — may be the same as A28 seen from the other end of the pipeline. DP operates on data; MU operates on marks on screen.", "names": {"DP": "select, subset"}, "dims": {"intent": "filter", "visref": "novisref", "element": ["dataset"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Same operation as Filter, seen from the data side (DP)."}, {"id": "A04", "name": "Import / add data", "def": "Insert new data or metadata into the system. “add, create, insert and import data or meta data”", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "external data or metadata", "note": "DP is the only source that covers data input; the other four assume the data is given.", "names": {"DP": "input data actions"}, "dims": {"intent": "input", "visref": "novisref", "element": ["dataset"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Data input is absent from YI’s seven categories; only DP covers it."}, {"id": "A05", "name": "Edit / correct data", "def": "Change raw values. “edit, update, modify and correct data”", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "record + new value", "note": "DP only.", "names": {"DP": "input data actions"}, "dims": {"intent": "input", "visref": "novisref", "element": ["dataset"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A06", "name": "Compile / transform", "def": "Apply functions or transformations to raw data. “apply functions/transformations to the input/raw data”", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "C", "DP": "D"}, "input": "raw data + transformation function", "note": "", "names": {"DP": "compile", "RA": "transshapetions in data provenance"}, "dims": {"intent": "input", "visref": "novisref", "element": ["dataset"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A07", "name": "Restore (bookmark)", "def": "“A request to restore a previously saved bookmark.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "bookmark", "note": "AMBIGUOUS target — restores data and visual state together; could belong under history.", "names": {"GZ": "Restore"}, "dims": {"intent": "history", "visref": "novisref", "element": ["view", "dataset"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "YI excludes history; GZ treats it as a meta action."}, {"id": "A08", "name": "Zoom (geometric)", "def": "Scale the visualization to show a new range. “A request to scale a visualization to display a new range along an ordinal dimension.” (GZ) / “moves the camera closer to or farther from the plane” (MU)", "defsrc": "GZ Tab. 1 · MU §11.5", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": "D"}, "input": "range constraint list", "note": "AMBIGUOUS — falls in a different cell in each source: YI → Abstract/Elaborate; GZ → Visual Exploration; MU → Navigate; DP → Presentation.", "names": {"GZ": "Zoom", "MU": "Zoom / geometric zooming", "YI": "geometric zooming", "DP": "navigate (zoom)"}, "dims": {"intent": "explore", "visref": "novisref", "element": ["view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Our decision: YI places zoom in Abstract/Elaborate; GZ gives Zoom and Pan the same intent, and YI places Pan in Explore."}, {"id": "A09", "name": "Semantic zooming", "def": "The object’s representation adapts to the available pixels. “the representation of the object adapts to the number of pixels available”", "defsrc": "MU §11.5.2", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "zoom level + pixel space available for the object", "note": "Kept apart from geometric zoom: both sources that cite it draw the distinction. YI uses it as an example of multiple intents (Abstract/Elaborate + Encode).", "names": {"MU": "Semantic zooming", "YI": "semantic zooming"}, "dims": {"intent": "abstract", "visref": "novisref", "element": ["item", "view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.5 uses semantic zooming as an example of Abstract/Elaborate (and of Encode)."}, {"id": "A10", "name": "Pan / Translate / Scroll", "def": "Move the view parallel to the image plane. “A request to scroll a visualization to a new location along an ordinal dimension.” (GZ)", "defsrc": "GZ Tab. 1 · MU §11.5", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": "D"}, "input": "range constraint list", "note": "", "names": {"GZ": "Pan", "MU": "Pan / Translate (synonym: scrolling)", "YI": "Panning", "DP": "navigate (pan)"}, "dims": {"intent": "explore", "visref": "novisref", "element": ["view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.2: “The most common Explore interaction technique in our survey is panning.”"}, {"id": "A11", "name": "Rotate", "def": "Rotate the camera around its own axis, or rotate part of the structure to reduce occlusion.", "defsrc": "MU §11.5 · YI §4.3", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "axis + angle", "note": "Absent from GZ, RA and DP.", "names": {"MU": "Rotate", "YI": "view rotation (SDM) and subtree rotation (ConeTrees)"}, "dims": {"intent": "explore", "visref": "novisref", "element": ["view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Changes the viewpoint without altering the representation."}, {"id": "A12", "name": "Slice", "def": "“a single value is chosen from the dimension to eliminate, and only the items matching that value for the dimension are extracted”", "defsrc": "MU §11.6.1", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "dimension to eliminate + chosen value", "note": "MU only.", "names": {"MU": "Slice"}, "dims": {"intent": "filter", "visref": "novisref", "element": ["attribute", "item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Only the items matching the chosen value remain."}, {"id": "A13", "name": "Cut", "def": "“allows the user to position a plane that divides the viewing volume in two, and everything on the side of the plane nearest to the camera viewpoint is not shown”", "defsrc": "MU §11.6.2", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "cutting plane (axis-aligned or arbitrary)", "note": "MU only.", "names": {"MU": "Cut"}, "dims": {"intent": "filter", "visref": "novisref", "element": ["view", "item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Removes everything on one side of the cutting plane."}, {"id": "A14", "name": "Project", "def": "“all items are shown, but without the information for specific dimensions chosen to exclude”", "defsrc": "MU §11.6.3", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "dimensions to exclude", "note": "AMBIGUOUS — MU gives ‘dimensional filtering’ as a synonym of orthographic projection. Possible overlap with attribute filtering.", "names": {"MU": "Project — cited synonym: dimensional filtering"}, "dims": {"intent": "filter", "visref": "novisref", "element": ["attribute"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "MU gives “dimensional filtering” as a synonym of projection."}, {"id": "A15", "name": "Linked navigation", "def": "“moving the viewpoint in one view is synchronized to movement in the others”", "defsrc": "MU §12.3.3", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "viewpoint change in one of the views", "note": "Requires multiple views — a concept absent from GZ’s model.", "names": {"MU": "Linked navigation"}, "dims": {"intent": "explore", "visref": "novisref", "element": ["view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Navigation, synchronized across views."}, {"id": "A16", "name": "Sort / Reorder", "def": "Reorder the presentation along a dimension. “A request to re-arrange the visual presentation along a particular dimension.” (GZ)", "defsrc": "GZ Tab. 1 · MU §11.3", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "C", "DP": ""}, "input": "dimension · order", "note": "MU adds a constraint GZ lacks: it only makes sense for categorical attributes.", "names": {"GZ": "Sort", "MU": "Reorder / Sort", "YI": "sorting columns (TableLens, InfoZoom)", "RA": "\"ordering\""}, "dims": {"intent": "reconfigure", "visref": "novisref", "element": ["item", "attribute"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.3 cites sorting columns (TableLens, InfoZoom) as Reconfigure."}, {"id": "A17", "name": "Rearrange", "def": "Reposition items or columns without reordering by value — move nodes freely, swap columns, manual layout.", "defsrc": "DP §6.1 · YI §4.3", "marks": {"YI": "C", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "element + target position", "note": "DECISION — kept apart from Sort. Ordering by value and repositioning by hand are different mechanisms, although YI mentions both in the same sentence.", "names": {"DP": "layout/rearrange the data", "YI": "rearranging columns; moving nodes (Vizster); Data Mountain"}, "dims": {"intent": "reconfigure", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.3: rearranging columns, moving nodes in Vizster."}, {"id": "A18", "name": "Realign", "def": "Change the baseline from which bars diverge, to compare heights.", "defsrc": "MU §11.3 · YI §4.3", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "attribute chosen as baseline", "note": "", "names": {"MU": "Realign (LineUp)", "YI": "baseline adjustment (Dix & Ellis); 3D equivalent in SDM"}, "dims": {"intent": "reconfigure", "visref": "novisref", "element": ["item", "attribute"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.3: baseline adjustment."}, {"id": "A19", "name": "Split", "def": "“A request to break apart the data represented by a set of visual objects into several new visual objects based upon some criteria”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "split parameters + constraint list per selected object", "note": "GZ only.", "names": {"GZ": "Split"}, "dims": {"intent": "reconfigure", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Regroups the visual objects by a criterion."}, {"id": "A20", "name": "Merge (visual grouping)", "def": "“A request to combine the data represented by two or more visual objects into a single visual group.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "constraint list per selected object", "note": "AMBIGUOUS — kept apart from Aggregate. GZ groups visually; MU creates a derived element that REPLACES the group.", "names": {"GZ": "Merge"}, "dims": {"intent": "reconfigure", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "The same, in reverse."}, {"id": "A21", "name": "Aggregate", "def": "“a group of elements is represented by a new derived element that stands in for the entire group. Elements are merged together with aggregation, as opposed to eliminated completely with filtering.”", "defsrc": "MU §13.4", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "group of elements + aggregation function (average, min, max, count, sum)", "note": "See note on Merge.", "names": {"MU": "Aggregate (item / spatial)"}, "dims": {"intent": "abstract", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Shows less detail: the group is replaced by a derived element (MU §13.4)."}, {"id": "A22", "name": "Jitter / spread", "def": "Shift each item by a small random increment to reveal density and reduce occlusion.", "defsrc": "YI §4.3", "marks": {"YI": "C", "GZ": "", "MU": "", "RA": "", "DP": ""}, "input": "set of overlapping items", "note": "YI only. An arrangement operation with a perceptual, not analytic, purpose.", "names": {"YI": "jitter (Spotfire); Spread Dust (Dust & Magnet)"}, "dims": {"intent": "reconfigure", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.3: jitter in Spotfire, Spread Dust in Dust & Magnet."}, {"id": "A23", "name": "Change encoding / metaphor", "def": "Switch the visual encoding idiom for another. “A request to alter the active visualization technique.” (GZ) / “switching from a node–link layout to a matrix layout” (MU)", "defsrc": "GZ Tab. 1 · MU §11.3", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": ""}, "input": "metaphor", "note": "DECISION — merged Change-Metaphor (GZ) and Change encoding (MU): both definitions describe switching the whole visualization technique.", "names": {"GZ": "Change-Metaphor", "MU": "Change encoding", "YI": "switching a pie chart for a histogram"}, "dims": {"intent": "encode", "visref": "novisref", "element": ["encoding", "view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.4: switching the whole representation."}, {"id": "A24", "name": "Change visual channel", "def": "Change the visual channel that encodes an attribute: color, size, shape, orientation, font.", "defsrc": "YI §4.4 · DP §6.1", "marks": {"YI": "C", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "attribute + visual channel (color, size, shape, orientation, font)", "note": "AMBIGUOUS — MU’s ‘change the range of mark sizes’ (Change parameter) may be exactly this.", "names": {"YI": "color encoding (Dust&Magnet, InfoScope, Spotfire), additive color (Attribute Explorer), size, orientation (Polaris), font (SemaSpace), shape", "DP": "mapping data actions"}, "dims": {"intent": "encode", "visref": "novisref", "element": ["encoding", "attribute"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.4: color, size, orientation, font, shape."}, {"id": "A25", "name": "Change parameter", "def": "“to alter some parameter of the existing encoding, such as the range of possible mark sizes”", "defsrc": "MU §11.3", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "encoding parameter + new value", "note": "See note above — candidate to merge with Change visual channel.", "names": {"MU": "Change parameter"}, "dims": {"intent": "encode", "visref": "novisref", "element": ["encoding"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Alters a parameter of the same encoding (MU §11.3)."}, {"id": "A26", "name": "Map data to marks", "def": "“assign data entities to perceptual marks and variables” — defining the mapping, an act prior to changing it.", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "data entities + perceptual marks and variables", "note": "Only DP covers the act of DEFINING the mapping; the other sources only cover CHANGING it.", "names": {"DP": "mapping data actions"}, "dims": {"intent": "encode", "visref": "visref", "element": ["encoding", "attribute"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Defines the mapping — DP; the other sources only cover changing it."}, {"id": "A27", "name": "Stylize / decorate", "def": "Change the specific presentation of the data without changing the underlying mapping.", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "object + style property", "note": "DP only.", "names": {"DP": "presentation data actions (stylize, decorate)"}, "dims": {"intent": "encode", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Changes presentation without changing the mapping; fits Encode comfortably."}, {"id": "A28", "name": "Select (visual elements)", "def": "“Allowing users to select one or more elements of interest in a vis is a fundamental action that supports nearly every interactive idiom. The output of a selection operation is often the input to a subsequent operation.”", "defsrc": "MU §11.4", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "target elements: items, links, attributes, attribute levels or view", "note": "MU insists Select is independent of Highlight: “two different design choices that can be independently varied”. No other source separates them.", "names": {"MU": "Select"}, "dims": {"intent": "select", "visref": "visref", "element": ["item", "attribute", "level", "link", "view"], "chain": "feeds"}, "elementOrigin": "L", "chainOrigin": "L", "chainWhy": "MU §11.4: “The output of a selection operation is often the input to a subsequent operation.”", "intentOrigin": "L", "intentWhy": "YI §4.1: “Select: mark something as interesting”."}, {"id": "A29", "name": "Highlight (single view)", "def": "Visually mark a subset within a single view. “A request to highlight a subset of visual objects.” (GZ) / “the elements that were chosen are indicated by changing their visual appearance” (MU)", "defsrc": "GZ Tab. 1 · MU §11.4.2", "marks": {"YI": "", "GZ": "D", "MU": "D", "RA": "", "DP": "D"}, "input": "constraint list", "note": "DECISION (Lyncoln) — split by number of views, not by name. GZ’s ‘Brush’ is single-view, so it falls here despite its name.", "names": {"GZ": "Brush", "MU": "Highlight", "DP": "mark something as interesting; highlight"}, "dims": {"intent": "select", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "D", "intentWhy": "Highlighting inside a view is marking what is of interest."}, {"id": "A30", "name": "Linked highlighting", "def": "Highlight the same item across coordinated views. “Linked highlighting between views shows how regions that are contiguous in one view are distributed within another.”", "defsrc": "MU §12.3", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "input": "selection made in one view", "note": "DECISION (Lyncoln) — the ‘brushing’ YI cites is multi-view, so it falls HERE and not with GZ’s Brush.", "names": {"MU": "Linked highlighting", "YI": "brushing (Spotfire)"}, "dims": {"intent": "connect", "visref": "visref", "element": ["item", "view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.7 treats brushing across views as Connect."}, {"id": "A31", "name": "Reveal related items", "def": "Highlight or bring up items related to a focus item, including previously hidden ones.", "defsrc": "YI §4.7", "marks": {"YI": "C", "GZ": "", "MU": "", "RA": "", "DP": ""}, "input": "focus item", "note": "YI’s Connect category became a dimension value; the cited techniques remain. No equivalent in the other sources.", "names": {"YI": "hover that highlights neighbors (Vizster); double-click that expands the node; click in Visual Thesaurus"}, "dims": {"intent": "connect", "visref": "visref", "element": ["item", "link"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.7: hover that highlights neighbors, double-click that expands the node."}, {"id": "A32", "name": "Inspect / details-on-demand", "def": "“A request for ‘details-on-demand’ for a visual object.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "C", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "constraint list (the inspected visual object)", "note": "", "names": {"GZ": "Inspect", "YI": "drill-down (SequoiaView), details-on-demand (SunBurst), focus in TableLens, tooltip (SeeIT)"}, "dims": {"intent": "abstract", "visref": "visref", "element": ["item"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "L", "intentWhy": "YI §4.5: tooltip, drill-down, details-on-demand."}, {"id": "A33", "name": "Annotate", "def": "“A request to tag meta-information to the data represented by one or more visual objects.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "C", "DP": "D"}, "input": "constraint list per selected visual object + tag", "note": "Bound to a visual object — the criterion GZ uses to separate visual insight from knowledge insight.", "names": {"GZ": "Annotate", "DP": "data-aware annotations", "RA": "annotation interactions"}, "dims": {"intent": "register", "visref": "visref", "element": ["item", "note"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "None of YI’s seven categories covers recording; GZ treats Annotate as an action of its own."}, {"id": "A34", "name": "Bookmark", "def": "“A request to save the current visualization for future review.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "C", "DP": ""}, "input": "visualization state + metadata (title, tags)", "note": "Bound to a visual object.", "names": {"GZ": "Bookmark", "RA": "bookmarking"}, "dims": {"intent": "register", "visref": "visref", "element": ["view", "note"], "chain": "feeds"}, "elementOrigin": "D", "chainOrigin": "L", "chainWhy": "GZ Tab. 1: Restore takes as its parameter the bookmark saved by this action.", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A35", "name": "Create note", "def": "“The creation of a new entry within a user’s electronic notes.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": "D"}, "input": "content", "note": "NOT bound to a visual object — GZ and DP say so explicitly. Included by Lyncoln’s decision to keep the exploration → insight cycle complete.", "names": {"GZ": "Create", "DP": "take notes not bound to data items"}, "dims": {"intent": "register", "visref": "novisref", "element": ["note"], "chain": "feeds"}, "elementOrigin": "D", "chainOrigin": "L", "chainWhy": "GZ Tab. 1: Modify and Remove take as their parameter the note created by this action.", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A36", "name": "Modify note", "def": "“A request to alter an existing observation in a user’s electronic notes.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "selected note + content", "note": "Not bound to a visual object.", "names": {"GZ": "Modify"}, "dims": {"intent": "register", "visref": "novisref", "element": ["note"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A37", "name": "Remove note", "def": "“A request to delete an observation from a user’s electronic notes.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "selected note", "note": "Not bound to a visual object.", "names": {"GZ": "Remove"}, "dims": {"intent": "register", "visref": "novisref", "element": ["note"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A38", "name": "Externalize thoughts", "def": "Document observations, questions, hypotheses, reflections and goals; manage knowledge; externalize thoughts.", "defsrc": "DP §6.1", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "input": "text content not bound to a data item", "note": "Not bound to a visual object. DP only.", "names": {"DP": "interface actions"}, "dims": {"intent": "register", "visref": "novisref", "element": ["note"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A39", "name": "Undo", "def": "“Removes the most recently performed action from a user’s sequence of historically performed actions.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "X", "GZ": "D", "MU": "", "RA": "C", "DP": "D"}, "input": "— (GZ explicitly lists no parameters)", "note": "SCOPE DIVERGENCE — YI excludes it (“not unique to Infovis”); GZ and DP make it a top-level class; RA treats it as a purpose; MU omits it. Included because its effect is on the state of the vis.", "names": {"GZ": "Undo", "DP": "meta actions", "RA": "command history actions", "YI": "EXCLUDED"}, "dims": {"intent": "history", "visref": "novisref", "element": ["historyaction"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "YI explicitly excludes it (“not unique to Infovis”); GZ and DP make it a meta action."}, {"id": "A40", "name": "Redo", "def": "“The inverse of undo, a request to re-perform an undone action.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "X", "GZ": "D", "MU": "", "RA": "C", "DP": "D"}, "input": "— (GZ explicitly lists no parameters)", "note": "See note on Undo.", "names": {"GZ": "Redo", "DP": "meta actions", "RA": "command history actions", "YI": "EXCLUDED"}, "dims": {"intent": "history", "visref": "novisref", "element": ["historyaction"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A41", "name": "Reset", "def": "Return the visualization to its initial state.", "defsrc": "YI §4.8", "marks": {"YI": "X", "GZ": "", "MU": "", "RA": "", "DP": ""}, "input": "—", "note": "Appears only as an item YI excludes. Included by the same criterion as Undo.", "names": {"YI": "EXCLUDED (along with undo/redo/history)"}, "dims": {"intent": "history", "visref": "novisref", "element": ["view"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A42", "name": "Delete (history action)", "def": "“Similar to undo, removes an action from the middle of a user’s sequence of historically performed actions.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "action", "note": "The only one that edits history AWAY from its tip. Not undo.", "names": {"GZ": "Delete"}, "dims": {"intent": "history", "visref": "novisref", "element": ["historyaction"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Edits history away from its tip — GZ only."}, {"id": "A43", "name": "Edit (history action)", "def": "“A request to modify the parameters of an action in a user’s action history.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "input": "selected action + modified parameters", "note": "GZ only. Changes a past step and re-runs from there.", "names": {"GZ": "Edit"}, "dims": {"intent": "history", "visref": "novisref", "element": ["historyaction"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Same."}, {"id": "A44", "name": "Revisit / step re-tracing", "def": "“A request to return to an earlier stage of analysis.”", "defsrc": "GZ Tab. 1", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "C", "DP": ""}, "input": "selected action", "note": "", "names": {"GZ": "Revisit", "RA": "step re-tracing"}, "dims": {"intent": "history", "visref": "novisref", "element": ["historyaction"], "chain": "terminal"}, "elementOrigin": "D", "chainOrigin": "D", "chainWhy": "", "intentOrigin": "T", "intentWhy": "Returns to an earlier stage of the analysis."}], "outputs": [{"id": "M01", "name": "New data brought into the analysis", "where": "data", "how": "adds", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "C", "DP": "D"}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Query)", "q": "“A request to bring additional data into a visualization.”"}, {"src": "DP", "loc": "§6.1", "q": "“add, create, insert and import data or meta data”"}], "note": "", "whereKey": "data", "howKey": "adds"}, {"id": "M02", "name": "Data value corrected", "where": "data", "how": "alters", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "ev": [{"src": "DP", "loc": "§6.1", "q": "“edit, update, modify and correct data”"}], "note": "DP only.", "whereKey": "data", "howKey": "alters"}, {"id": "M03", "name": "Derived data created", "where": "data", "how": "adds", "marks": {"YI": "", "GZ": "", "MU": "C", "RA": "C", "DP": "D"}, "ev": [{"src": "DP", "loc": "§6.1", "q": "compile / processing data actions"}, {"src": "MU", "loc": "§3.4.2.3", "q": "derive"}], "note": "Aggregate also produces a derived element (MU §13.4).", "whereKey": "data", "howKey": "adds"}, {"id": "M04", "name": "Set of displayed items reduced or expanded by a condition", "where": "data", "how": "removes / adds", "marks": {"YI": "D", "GZ": "D", "MU": "D", "RA": "", "DP": "C"}, "ev": [{"src": "MU", "loc": "§11.3", "q": "“change which attributes are filtered”"}, {"src": "YI", "loc": "§4.6", "q": "“show me something conditionally”"}, {"src": "YI", "loc": "§4.7", "q": "“reveal related data items which are originally not shown”"}], "note": "MU §13.2: “bidirectional: they may serve to either reduce or increase the number of visible elements”.", "whereKey": "data", "howKey": "removes-adds"}, {"id": "M05", "name": "View dimensionality reduced", "where": "navigation", "how": "removes", "marks": {"YI": "", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.6", "q": "slice, cut, project"}], "note": "MU only.", "whereKey": "navigation", "howKey": "removes"}, {"id": "M06", "name": "View scale changed", "where": "navigation", "how": "rescales", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Zoom)", "q": "“A request to scale…”"}, {"src": "MU", "loc": "§11.3", "q": "“change the viewpoint”"}], "note": "", "whereKey": "navigation", "howKey": "rescales"}, {"id": "M07", "name": "View position translated", "where": "navigation", "how": "translates", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "", "loc": "", "q": "GZ Tab. 1 (Pan)"}, {"src": "MU", "loc": "§11.3", "q": "“change the viewpoint”"}, {"src": "YI", "loc": "§4.2", "q": "panning"}], "note": "", "whereKey": "navigation", "howKey": "translates"}, {"id": "M08", "name": "View orientation changed", "where": "navigation", "how": "rotates", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.5", "q": "rotate"}, {"src": "YI", "loc": "§4.3", "q": "view rotation (SDM)"}], "note": "Rotate is not formalized in any source.", "whereKey": "navigation", "howKey": "rotates"}, {"id": "M09", "name": "Aggregation level changed", "where": "arrangement", "how": "aggregates / disaggregates", "marks": {"YI": "", "GZ": "C", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.3", "q": "“change the aggregation level”"}, {"src": "MU", "loc": "§13.4", "q": "aggregate"}, {"src": "GZ", "loc": "Tab. 1", "q": "Split, Merge"}], "note": "", "whereKey": "arrangement", "howKey": "aggregates"}, {"id": "M10", "name": "Representation adapted to available space", "where": "navigation", "how": "switches", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.5.2", "q": "semantic zooming"}, {"src": "YI", "loc": "§5", "q": "semantic zooming"}], "note": "", "whereKey": "navigation", "howKey": "switches"}, {"id": "M11", "name": "Item order changed", "where": "arrangement", "how": "reorders", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.3", "q": "“change the order”"}, {"src": "", "loc": "", "q": "GZ Tab. 1 (Sort)"}], "note": "", "whereKey": "arrangement", "howKey": "reorders"}, {"id": "M12", "name": "Item positions in the layout changed", "where": "arrangement", "how": "repositions", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": "C"}, "ev": [{"src": "MU", "loc": "§11.3", "q": "“change the arrangement”"}, {"src": "YI", "loc": "§4.3", "q": "“move nodes freely”"}, {"src": "DP", "loc": "§6.2", "q": "Rearrange"}], "note": "", "whereKey": "arrangement", "howKey": "repositions"}, {"id": "M13", "name": "Visual encoding switched", "where": "mapping", "how": "switches", "marks": {"YI": "D", "GZ": "D", "MU": "D", "RA": "", "DP": "C"}, "ev": [{"src": "MU", "loc": "§11.3", "q": "“change the encoding”"}, {"src": "", "loc": "", "q": "GZ Tab. 1 (Change-Metaphor)"}, {"src": "YI", "loc": "§4.4", "q": "“show me a different representation”"}], "note": "", "whereKey": "mapping", "howKey": "switches"}, {"id": "M14", "name": "Encoding parameter or channel changed", "where": "mapping", "how": "alters", "marks": {"YI": "C", "GZ": "", "MU": "D", "RA": "", "DP": ""}, "ev": [{"src": "MU", "loc": "§11.3", "q": "change parameter"}, {"src": "YI", "loc": "§4.4", "q": "color encoding"}], "note": "", "whereKey": "mapping", "howKey": "alters"}, {"id": "M15", "name": "Presentation style changed", "where": "style", "how": "alters", "marks": {"YI": "", "GZ": "", "MU": "", "RA": "", "DP": "D"}, "ev": [{"src": "DP", "loc": "§6.1", "q": "presentation data actions — stylize, decorate"}], "note": "DP only.", "whereKey": "style", "howKey": "alters"}, {"id": "M16", "name": "Items marked as selection", "where": "highlight / focus", "how": "marks", "marks": {"YI": "D", "GZ": "", "MU": "D", "RA": "", "DP": "C"}, "ev": [{"src": "MU", "loc": "§11.4", "q": "“The output of a selection operation is often the input to a subsequent operation.”"}, {"src": "YI", "loc": "§4.1", "q": "“mark something as interesting”"}], "note": "Does not change what is displayed; creates the selection set.", "whereKey": "highlight", "howKey": "marks"}, {"id": "M17", "name": "Items visually highlighted", "where": "highlight / focus", "how": "highlights", "marks": {"YI": "C", "GZ": "D", "MU": "D", "RA": "", "DP": "C"}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Brush)", "q": "“A request to highlight a subset of visual objects.”"}, {"src": "MU", "loc": "§11.4.2", "q": "highlighting"}, {"src": "DP", "loc": "§6.2", "q": "Highlight data point"}], "note": "", "whereKey": "highlight", "howKey": "highlights"}, {"id": "M18", "name": "Details shown on demand", "where": "highlight / focus", "how": "reveals", "marks": {"YI": "C", "GZ": "D", "MU": "", "RA": "", "DP": ""}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Inspect)", "q": "“A request for ‘details-on-demand’ for a visual object.”"}, {"src": "YI", "loc": "§4.5", "q": "tooltip"}], "note": "", "whereKey": "highlight", "howKey": "reveals"}, {"id": "M19", "name": "Annotation bound to the data recorded", "where": "notes", "how": "records", "marks": {"YI": "", "GZ": "D", "MU": "C", "RA": "C", "DP": "C"}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Annotate)", "q": "“A request to tag meta-information to the data represented by one or more visual objects.”"}, {"src": "MU", "loc": "§3.4.2.1", "q": "annotate"}], "note": "", "whereKey": "notes", "howKey": "records"}, {"id": "M20", "name": "Free note created, modified or removed", "where": "notes", "how": "records", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "", "DP": "C"}, "ev": [{"src": "GZ", "loc": "Tab. 1", "q": "Create, Modify, Remove"}, {"src": "DP", "loc": "§6.1", "q": "interface actions (externalize thoughts)"}], "note": "Not bound to a visual object.", "whereKey": "notes", "howKey": "records"}, {"id": "M21", "name": "Visualization state saved", "where": "notes", "how": "records", "marks": {"YI": "", "GZ": "D", "MU": "C", "RA": "C", "DP": ""}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Bookmark)", "q": "“A request to save the current visualization for future review.”"}, {"src": "MU", "loc": "§3.4.2.2", "q": "“The record choice saves a persistent artifact”"}], "note": "", "whereKey": "notes", "howKey": "records"}, {"id": "M22", "name": "Analysis state restored", "where": "history", "how": "restores", "marks": {"YI": "X", "GZ": "D", "MU": "", "RA": "C", "DP": "C"}, "ev": [{"src": "GZ", "loc": "Tab. 1", "q": "Restore, Undo, Redo, Revisit"}, {"src": "RA", "loc": "", "q": "step re-tracing"}], "note": "YI excludes undo/redo/history (“not unique to Infovis”).", "whereKey": "history", "howKey": "restores"}, {"id": "M23", "name": "Action history changed", "where": "history", "how": "alters", "marks": {"YI": "", "GZ": "D", "MU": "", "RA": "C", "DP": "C"}, "ev": [{"src": "GZ", "loc": "Tab. 1 (Delete)", "q": "“removes an action from the middle of a user’s sequence”"}, {"src": "", "loc": "", "q": "GZ Tab. 1 (Edit)"}], "note": "", "whereKey": "history", "howKey": "alters"}], "ai": [{"a": "A08", "i": "I02", "impl": "Google Maps", "grp": "GZ-1 · Google Maps", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation (whole view)", "origin": "L", "src": "GZ §5.1", "q": "“(1) double click on the map”"}, {"a": "A08", "i": "I04", "impl": "Google Maps", "grp": "GZ-2 · Google Maps", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (slider)", "origin": "L", "src": "GZ §5.1", "q": "“(2) drag a zoom slider”"}, {"a": "A08", "i": "I01", "impl": "Google Maps", "grp": "GZ-3 · Google Maps", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (button)", "origin": "L", "src": "GZ §5.1", "q": "“(3) click on a “plus” button. All three gestures are semantically equivalent and can be represented by the same action.”"}, {"a": "A08", "i": "I10", "impl": "", "grp": "FIG-1 · figure 2026-09-18", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation (whole view)", "origin": "T", "src": "", "q": ""}, {"a": "A08", "i": "I11", "impl": "", "grp": "FIG-2 · figure 2026-09-18", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation (whole view)", "origin": "T", "src": "", "q": ""}, {"a": "A16", "i": "I05", "impl": "Sort scenario", "grp": "GZ-4 · Sort scenario", "mode": "sequence", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "GZ §4", "q": "“E1 : mouse-drag to select all companies to be sorted”"}, {"a": "A16", "i": "I03", "impl": "Sort scenario", "grp": "GZ-4 · Sort scenario", "mode": "sequence", "order": 2, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "GZ §4", "q": "“E2 : mouse-right-click to select open a popup menu”"}, {"a": "A16", "i": "I01", "impl": "Sort scenario", "grp": "GZ-4 · Sort scenario", "mode": "sequence", "order": 3, "surface": "widget", "surfaceLabel": "widget (menu)", "origin": "L", "src": "GZ §4", "q": "“E3 : menu-select to choose “Sort” from a list of menu options”"}, {"a": "A16", "i": "I07", "impl": "Sort scenario", "grp": "GZ-4 · Sort scenario", "mode": "sequence", "order": 4, "surface": "widget", "surfaceLabel": "widget (field)", "origin": "L", "src": "GZ §4", "q": "“E3 ...E8 : keyboard-events to set sorting parameters”"}, {"a": "A16", "i": "I01", "impl": "Sort scenario", "grp": "GZ-4 · Sort scenario", "mode": "sequence", "order": 5, "surface": "widget", "surfaceLabel": "widget (button)", "origin": "L", "src": "GZ §4", "q": "“E9 : mouse-click to submit the entered sorting parameters”"}, {"a": "A16", "i": "I01", "impl": "example", "grp": "DP-1 · example", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (button)", "origin": "L", "src": "DP §6.2", "q": "“sort data points by: clicking on a button”"}, {"a": "A16", "i": "I15", "impl": "example", "grp": "DP-2 · example", "mode": "single", "order": 1, "surface": "none", "surfaceLabel": "no on-screen target", "origin": "L", "src": "DP §6.2", "q": "“speaking a voice command”"}, {"a": "A16", "i": "I04", "impl": "example", "grp": "DP-3 · example", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "D", "src": "DP §6.2", "q": "“or rearranging data points manually” — the gesture (drag) is inferred."}, {"a": "A02", "i": "I04", "impl": "Spotfire", "grp": "YI-1 · Spotfire", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (slider)", "origin": "L", "src": "YI §4.6", "q": "“Users select ranges by moving sliders”"}, {"a": "A02", "i": "I01", "impl": "Spotfire", "grp": "YI-2 · Spotfire", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (checkbox)", "origin": "L", "src": "YI §4.6", "q": "“or particular values by clicking on check boxes”"}, {"a": "A02", "i": "I08", "impl": "Name Voyager", "grp": "YI-3 · Name Voyager", "mode": "single", "order": 1, "surface": "none", "surfaceLabel": "no on-screen target", "origin": "L", "src": "YI §4.6", "q": "“Instead of using specific controls, users can filter the data items (e.g., names) through keyboard interaction.”"}, {"a": "A02", "i": "I12", "impl": "QuerySketch", "grp": "YI-4 · QuerySketch", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "YI §4.6", "q": "“allows users to draw a line graph freehand”"}, {"a": "A02", "i": "I04", "impl": "dendrogram", "grp": "MU-1 · dendrogram", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "MU §13.3", "q": "“Dragging it down vertically dynamically filters out the columns”"}, {"a": "A02", "i": "I01", "impl": "example", "grp": "DP-4 · example", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (checkbox)", "origin": "L", "src": "DP §3.1.3", "q": "“clicking on a checkbox to toggle filtering”"}, {"a": "A01", "i": "I04", "impl": "HomeFinder", "grp": "DP-5 · HomeFinder", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (slider)", "origin": "L", "src": "DP §6.2 (table)", "q": "Make data query: “1) move slider widget”"}, {"a": "A01", "i": "I04", "impl": "HomeFinder", "grp": "DP-6 · HomeFinder", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "“2) drag an icon to a certain location”"}, {"a": "A01", "i": "I08", "impl": "", "grp": "M17-1 · Marcos", "mode": "sequence", "order": 1, "surface": "widget", "surfaceLabel": "widget (field)", "origin": "T", "src": "", "q": ""}, {"a": "A01", "i": "I01", "impl": "", "grp": "M17-1 · Marcos", "mode": "sequence", "order": 2, "surface": "widget", "surfaceLabel": "widget (button)", "origin": "T", "src": "", "q": ""}, {"a": "A04", "i": "I14", "impl": "Token", "grp": "DP-7 · Token", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "Add data point: “1) add token”"}, {"a": "A05", "i": "I14", "impl": "Token", "grp": "DP-8 · Token", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "Correct data point: “1) replace, 2) recolor token”"}, {"a": "A28", "i": "I01", "impl": "", "grp": "MU-2", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "MU §11.4.1", "q": "“a mouse click produces one kind of selection”"}, {"a": "A28", "i": "I06", "impl": "", "grp": "MU-3", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "MU §11.4.1", "q": "“and a mouse hover, where the cursor simply passes over the object, produces another”"}, {"a": "A28", "i": "I07", "impl": "", "grp": "MU-4", "mode": "single", "order": 1, "surface": "none", "surfaceLabel": "no on-screen target", "origin": "L", "src": "MU §11.4.1", "q": "“key presses can be added to the mix”"}, {"a": "A28", "i": "I18", "impl": "", "grp": "MU-5", "mode": "single", "order": 1, "surface": "none", "surfaceLabel": "no on-screen target", "origin": "L", "src": "MU §11.4.1", "q": "“multiple levels of proximity”"}, {"a": "A28", "i": "I05", "impl": "example", "grp": "DP-9 · example", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §3.1.3", "q": "“mouse drags to perform a lasso selection”"}, {"a": "A28", "i": "I13", "impl": "Zooids", "grp": "DP-10 · Zooids", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "Mark data point as interesting: “point with finger”"}, {"a": "A28", "i": "I06", "impl": "Dust & Magnet", "grp": "DP-11 · Dust & Magnet", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "“move mouse cursor on top”"}, {"a": "A28", "i": "I14", "impl": "Zooids", "grp": "DP-12 · Zooids", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "“stick object besides”, “put empty glass upside-down over”"}, {"a": "A29", "i": "I06", "impl": "", "grp": "MU-6", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "MU §10.4.5", "q": "“Temporary highlighting is often used with lightweight actions such as mouseover or clicking”"}, {"a": "A29", "i": "I01", "impl": "", "grp": "MU-7", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "MU §10.4.5", "q": "“…or clicking”"}, {"a": "A29", "i": "I08", "impl": "", "grp": "MU-8", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (field)", "origin": "L", "src": "MU §10.4.5", "q": "“heavyweight actions such as using search, where a text string is typed into a control panel”"}, {"a": "A29", "i": "I01", "impl": "Dust & Magnet", "grp": "DP-13 · Dust & Magnet", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "Highlight data point: “1) click on”"}, {"a": "A29", "i": "I09", "impl": "Dust & Magnet", "grp": "DP-14 · Dust & Magnet", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "“2) touch”"}, {"a": "A32", "i": "I06", "impl": "SeeIT", "grp": "YI-5 · SeeIT", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "YI §4.5", "q": "“when a mouse cursor hovers over a data item”"}, {"a": "A31", "i": "I06", "impl": "Vizster", "grp": "YI-6 · Vizster", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "YI §4.7", "q": "“hovering a mouse cursor over a node highlights directly connected nodes”"}, {"a": "A31", "i": "I02", "impl": "Vizster", "grp": "YI-7 · Vizster", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "YI §4.7", "q": "“double clicking a node causes expansion of the node”"}, {"a": "A31", "i": "I01", "impl": "Visual Thesaurus", "grp": "YI-8 · Visual Thesaurus", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "YI §4.7", "q": "“clicking a word in a…”"}, {"a": "A10", "i": "I04", "impl": "", "grp": "YI-9", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "YI §4.2", "q": "“the user grabs the scene and moves it with a mouse”"}, {"a": "A10", "i": "I04", "impl": "", "grp": "YI-10", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (scrollbar)", "origin": "L", "src": "YI §4.2", "q": "“or by simply altering the view via scrollbars”"}, {"a": "A17", "i": "I04", "impl": "Vizster", "grp": "YI-11 · Vizster", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "D", "src": "YI §4.3", "q": "“can move nodes freely” — the gesture (drag) is inferred."}, {"a": "A17", "i": "I14", "impl": "Zooids", "grp": "DP-15 · Zooids", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "Rearrange: “put points in boxes labelled with names of dimensions”"}, {"a": "A23", "i": "I04", "impl": "Tableau", "grp": "MU-9 · Tableau", "mode": "single", "order": 1, "surface": "widget", "surfaceLabel": "widget (shelf)", "origin": "L", "src": "MU §11.3", "q": "“via drag and drop interactions to specify which attributes to encode”"}, {"a": "A12", "i": "I04", "impl": "", "grp": "MU-10", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "MU §11.6", "q": "“dragging with a view changes the slice value”"}, {"a": "A26", "i": "I12", "impl": "Zooids", "grp": "DP-16 · Zooids", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "Encode dimension: “map dimension to color using paint”"}, {"a": "A26", "i": "I14", "impl": "Zooids", "grp": "DP-17 · Zooids", "mode": "single", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "L", "src": "DP §6.2 (table)", "q": "“map dimension to sticker shape, color, texture, size, etc.. and stick on data points”"}, {"a": "A33", "i": "I01", "impl": "", "grp": "FIG-3 · figure 2026-09-18", "mode": "sequence", "order": 1, "surface": "rep", "surfaceLabel": "representation", "origin": "T", "src": "", "q": ""}, {"a": "A33", "i": "I08", "impl": "", "grp": "FIG-3 · figure 2026-09-18", "mode": "sequence", "order": 2, "surface": "widget", "surfaceLabel": "widget (field)", "origin": "T", "src": "", "q": ""}], "am": [{"a": "A01", "m": "M01", "origin": "D", "src": "GZ Tab. 1", "note": "GZ Fig. 3: Query also changes the visual presentation, but its primary intent is to change the data."}, {"a": "A02", "m": "M04", "origin": "D", "src": "GZ Tab. 1 · MU §13.3", "note": "Sources disagree on whether Filter removes from the data or only from the view."}, {"a": "A03", "m": "M04", "origin": "D", "src": "DP §6.1", "note": "May be the same as A28 seen from the data side."}, {"a": "A04", "m": "M01", "origin": "D", "src": "DP §6.1", "note": ""}, {"a": "A05", "m": "M02", "origin": "D", "src": "DP §6.1", "note": ""}, {"a": "A06", "m": "M03", "origin": "D", "src": "DP §6.1", "note": ""}, {"a": "A07", "m": "M22", "origin": "D", "src": "GZ Tab. 1", "note": "Restores data and visual state together."}, {"a": "A08", "m": "M06", "origin": "D", "src": "GZ Tab. 1 · MU §11.5", "note": ""}, {"a": "A09", "m": "M10", "origin": "D", "src": "MU §11.5.2", "note": ""}, {"a": "A09", "m": "M06", "origin": "D", "src": "MU §11.5.2", "note": "Semantic zoom also changes the scale."}, {"a": "A10", "m": "M07", "origin": "D", "src": "GZ Tab. 1 · MU §11.5", "note": ""}, {"a": "A11", "m": "M08", "origin": "T", "src": "—", "note": "Rotate is not formalized in any source."}, {"a": "A12", "m": "M05", "origin": "D", "src": "MU §11.6.1", "note": ""}, {"a": "A13", "m": "M05", "origin": "D", "src": "MU §11.6.2", "note": ""}, {"a": "A14", "m": "M05", "origin": "D", "src": "MU §11.6.3", "note": ""}, {"a": "A15", "m": "M06", "origin": "D", "src": "MU §12.3.3", "note": "Scope: multiple linked views."}, {"a": "A15", "m": "M07", "origin": "D", "src": "MU §12.3.3", "note": "Scope: multiple linked views."}, {"a": "A16", "m": "M11", "origin": "D", "src": "GZ Tab. 1 · MU §11.3", "note": ""}, {"a": "A17", "m": "M12", "origin": "D", "src": "DP §6.1 · YI §4.3", "note": ""}, {"a": "A18", "m": "M12", "origin": "D", "src": "MU §11.3 · YI §4.3", "note": ""}, {"a": "A19", "m": "M09", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A20", "m": "M09", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A21", "m": "M09", "origin": "D", "src": "MU §13.4", "note": ""}, {"a": "A21", "m": "M03", "origin": "D", "src": "MU §13.4", "note": "“a new derived element that stands in for the entire group”."}, {"a": "A22", "m": "M12", "origin": "D", "src": "YI §4.3", "note": ""}, {"a": "A23", "m": "M13", "origin": "D", "src": "GZ Tab. 1 · MU §11.3", "note": ""}, {"a": "A24", "m": "M14", "origin": "D", "src": "YI §4.4 · DP §6.1", "note": ""}, {"a": "A25", "m": "M14", "origin": "D", "src": "MU §11.3", "note": ""}, {"a": "A26", "m": "M13", "origin": "D", "src": "DP §6.1", "note": ""}, {"a": "A27", "m": "M15", "origin": "D", "src": "DP §6.1", "note": ""}, {"a": "A28", "m": "M16", "origin": "L", "src": "MU §11.4", "note": "MU states the output: the selection set, input to the next action."}, {"a": "A29", "m": "M17", "origin": "D", "src": "GZ Tab. 1 · MU §11.4.2", "note": ""}, {"a": "A30", "m": "M17", "origin": "D", "src": "MU §12.3", "note": "Scope: multiple linked views."}, {"a": "A31", "m": "M17", "origin": "D", "src": "YI §4.7", "note": "Vizster: hover highlights neighbors."}, {"a": "A31", "m": "M04", "origin": "D", "src": "YI §4.7", "note": "“reveal related data items which are originally not shown”."}, {"a": "A32", "m": "M18", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A33", "m": "M19", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A34", "m": "M21", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A35", "m": "M20", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A36", "m": "M20", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A37", "m": "M20", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A38", "m": "M20", "origin": "D", "src": "DP §6.1", "note": ""}, {"a": "A39", "m": "M22", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A39", "m": "M23", "origin": "L", "src": "GZ Tab. 1", "note": "“Removes the most recently performed action from a user’s sequence of actions.”"}, {"a": "A40", "m": "M22", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A40", "m": "M23", "origin": "D", "src": "GZ Tab. 1", "note": ""}, {"a": "A41", "m": "M22", "origin": "T", "src": "—", "note": "Reset appears only as an item YI excludes."}, {"a": "A42", "m": "M23", "origin": "L", "src": "GZ Tab. 1", "note": "“removes an action from the middle of a user’s sequence”."}, {"a": "A43", "m": "M23", "origin": "D", "src": "GZ Tab. 1", "note": "Changes a past step and re-runs from there."}, {"a": "A44", "m": "M22", "origin": "D", "src": "GZ Tab. 1", "note": "“A request to return to an earlier stage of analysis.”"}], "dims": [{"id": "DI1", "level": "Interaction", "name": "Human modality", "values": "hand; voice; gaze; head / body", "origin": "L", "q": "DP §6.2: “An interaction means can be characterized according to its cardinality, human modality, and technology modality.”", "note": "Cardinality is not a property of the interaction: it moved to the relation."}, {"id": "DI2", "level": "Interaction", "name": "Technology modality (device)", "values": "mouse; keyboard; touch screen; pen; tangible object; microphone; eye tracker; body / proximity sensor", "origin": "L", "q": "DP §6.2 (same passage) · MU §11.4.1: “With a mouse, clicks and hovers are easy to get […] If there is also a keyboard, then key presses can be added”", "note": ""}, {"id": "DI3", "level": "Interaction", "name": "Interaction continuity", "values": "discrete; continuous", "origin": "L", "q": "DP §3.1.3: “Continuous interactions involve a sequence of intermediate visualization states […] With discrete interactions, action and reaction occur in a distinct manner”", "note": "DP notes that action and reaction may differ in continuity — the reaction’s is DM5."}, {"id": "DI4", "level": "Interaction", "name": "Weight", "values": "lightweight; heavyweight", "origin": "D", "q": "MU §10.4.5: “lightweight actions such as mouseover or clicking, as opposed to more heavyweight actions such as using search, where a text string is typed”", "note": "A single passage, from MU. Weak candidate."}, {"id": "DA1", "level": "Action", "name": "User intent", "values": "select; explore; reconfigure; encode; abstract/elaborate; filter; connect  +  register* (extension)", "origin": "L", "q": "YI §4: “Based on the notion of user intent, the following seven categories of interaction in Infovis emerged”", "note": "Register* is our extension. Zoom as Explore departs from YI."}, {"id": "DA2", "level": "Action", "name": "Element type (selection target)", "values": "item; attribute; link; attribute level; view", "origin": "L", "q": "MU §11.4.1: “A fundamental design choice with selection is what kinds of elements can be selection targets.”", "note": ""}, {"id": "DA3", "level": "Action", "name": "Agent (who holds the intent)", "values": "end user; designer  +  autonomous agent (proposed extension)", "origin": "L", "q": "MU §3.3: “indicating who has a goal or makes a design choice: the designer of the vis or the end user of the vis” · DP §5.2: “the beholder of the intent be the designer”", "note": "The third value is the LLM extension."}, {"id": "DA4", "level": "Action", "name": "Visual object reference", "values": "references an on-screen object; does not", "origin": "D", "q": "GZ §5.3: separates visual insight from knowledge insight by whether they reference visualization objects", "note": ""}, {"id": "DA5", "level": "Action", "name": "Intent cardinality", "values": "single intent; multiple intents", "origin": "D", "q": "YI §5: “Some other interaction techniques appear to fulfill multiple user intents”", "note": ""}, {"id": "DA6", "level": "Action", "name": "Intent presence", "values": "explicit; implicit", "origin": "D", "q": "DP §5.2: “include implicit interaction [61] and coarsely approximated intent”", "note": ""}, {"id": "DA7", "level": "Action", "name": "Position in the chain", "values": "feeds another action; terminal", "origin": "D", "q": "MU §11.4: “The output of a selection operation is often the input to a subsequent operation.”", "note": "Could become a third relation (Action → Action)."}, {"id": "DA8", "level": "Action", "name": "Navigation constraint", "values": "constrained; unconstrained", "origin": "D", "q": "MU §11.5.3: Constrained Navigation", "note": "Applies only to navigation actions."}, {"id": "DM1", "level": "Modification", "name": "Where it changes (target)", "values": "data; mapping; navigation; arrangement; highlight / focus; style; notes; history", "origin": "D", "q": "GZ §5.2: “(1) data change, (2) visual change, (3) notes change, and (4) history change” · DP §6.1 · RA §4.1", "note": "Was the action-level D02. Moved to this level on 2026-09-21."}, {"id": "DM2", "level": "Modification", "name": "How it changes", "values": "adds; removes; alters; reorders; repositions; rescales; translates; rotates; switches; aggregates / disaggregates; marks; highlights; reveals; records; restores", "origin": "D", "q": "MU §11.3: “change the encoding, change the arrangement, change the order, change the viewpoint, change which attributes are filtered, change the aggregation level”", "note": "Values are our derivation from MU’s list. Absorbs D14 (eliminate vs merge = removes vs aggregates)."}, {"id": "DM3", "level": "Modification", "name": "Direction (number of visible elements)", "values": "reduces; increases; keeps", "origin": "D", "q": "MU §13.2: “many of the idioms covered in this chapter are bidirectional: they may serve to either reduce or increase the number of visible elements”", "note": ""}, {"id": "DM4", "level": "Modification", "name": "Persistence", "values": "transitory; persistent", "origin": "D", "q": "MU §10.4.5: “particularly when the highlighting is transitory rather than ongoing” · MU §3.4.2.2: “The record choice saves a persistent artifact, in contrast to the annotate, which attaches information temporarily”", "note": ""}, {"id": "DM5", "level": "Modification", "name": "Reaction continuity", "values": "instantaneous; animated / continuous", "origin": "L", "q": "DP §3.1.3: “Action and reaction can have different continuity (e.g., a continuous action can have a discrete reaction)” · MU §11.3: animated transitions", "note": ""}, {"id": "DM6", "level": "Modification", "name": "Scope", "values": "single view; multiple linked views", "origin": "D", "q": "MU ch. 12: linked highlighting, linked navigation", "note": ""}, {"id": "DM7", "level": "Modification", "name": "Reversibility", "values": "reversible; irreversible", "origin": "D", "q": "DP §3.1.3: directness associated with actions that are “rapid, incremental, and reversible” · GZ Tab. 1: Undo", "note": ""}, {"id": "DR1", "level": "Relation A×I", "name": "Combination mode", "values": "single; sequence (with order)  —  different implementations of the same action are alternatives", "origin": "D", "q": "GZ §5.1: three alternative gestures for Zoom · GZ §4: nine events in sequence for a single Sort", "note": ""}, {"id": "DR2", "level": "Relation A×I", "name": "Interaction surface", "values": "widget; representation (mark or view); no on-screen target", "origin": "D", "q": "DP §3.1.3: “dynamic queries are now said to be indirect because the user interacts with intermediate, likely spatially distant widgets – as opposed to interacting directly with the representation of the data itself”", "note": "Operationalizes DP’s direct–indirect continuum. This is where widgets went. Varies with use, so it lives on the relation."}, {"id": "DR3", "level": "Relation A×I", "name": "Cardinality of interaction means (metric)", "values": "number of implementations per action", "origin": "L", "q": "DP §6.2: “the number of interaction means with which the person can perform each action”", "note": "implementations)."}, {"id": "S1", "level": "Structural", "name": "Granularity", "values": "event; action; sub-task; task", "origin": "L", "q": "GZ §4: “tasks, sub-tasks, actions, and events”", "note": "Classifies no item: these are the levels themselves. Event → Interaction, Action → Action; task and sub-task are out."}, {"id": "S2", "level": "Structural", "name": "Intent vs. system response", "values": "—", "origin": "L", "q": "GZ §5.3: “based on the user’s primary intention, not the eventual system response”", "note": "This is the Action / Modification split. It became structure, not a dimension."}, {"id": "S3", "level": "Structural", "name": "Visual metaphor", "values": "map; timeline; treemap…", "origin": "D", "q": "GZ §5.1: “Our action representation is invariant to the underlying visual metaphor”", "note": "Describes the system, not the interaction."}, {"id": "S4", "level": "Structural", "name": "Domain dependence", "values": "—", "origin": "D", "q": "GZ §4: tasks are domain-specific; actions are generic", "note": "Every action is generic by definition."}, {"id": "S5", "level": "Structural", "name": "Observability", "values": "capturable; internal", "origin": "D", "q": "RA §4.1: interaction vs. rationale provenance", "note": "Classifies what can be recorded — relevant to provenance, not to the space."}]}}</script>
+<script>
+(function(){
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const $ = id => document.getElementById(id);
+const eyebrow=$('eyebrow'), title=$('title'), subtitle=$('subtitle'), chain=$('chain'), facts=$('facts'), tabs=$('tabs'), main=$('main'), backdrop=$('backdrop');
+
+/* ---------------- icons (24×24, stroke) */
+const P = {
+  level_i:'<path d="M6 3v15l4-3.5 2.6 6 2.4-1-2.6-6H18z"/>',
+  level_a:'<path d="M13 2 5 13.5h6L10 22l9-12.5h-6z"/>',
+  level_o:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>',
+  hand:'<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V11m0-.5V4a1.5 1.5 0 0 1 3 0v7m0-.5V6a1.5 1.5 0 0 1 3 0v7.5a7 7 0 0 1-7 7h-.6a5.5 5.5 0 0 1-4.5-2.4L3.6 14a1.5 1.5 0 0 1 2.4-1.8L8 14.5"/>',
+  voice:'<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01"/>',
+  gaze:'<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  body:'<circle cx="12" cy="4.5" r="2"/><path d="M12 7v7M7 10h10M12 14l-3.5 7M12 14l3.5 7"/>',
+  mouse:'<rect x="6.5" y="3" width="11" height="18" rx="5.5"/><path d="M12 7v3.5"/>',
+  keyboard:'<rect x="2.5" y="6.5" width="19" height="11" rx="2"/><path d="M6.5 10.5h.01M10 10.5h.01M13.5 10.5h.01M17 10.5h.01M8 14h8"/>',
+  touch:'<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  pen:'<path d="M4 20l1-4.5L16.5 4a2.1 2.1 0 0 1 3 3L8 18.5z"/><path d="M14.5 6l3 3"/>',
+  tangible:'<path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/>',
+  microphone:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  eyetracker:'<path d="M3 12s3.3-6 9-6 9 6 9 6-3.3 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.2"/><path d="M12 2v2M12 20v2M2 12H1M23 12h-1"/>',
+  sensor:'<path d="M4.5 13a7.5 7.5 0 0 1 15 0M8 13a4 4 0 0 1 8 0"/><circle cx="12" cy="13" r="1" fill="currentColor"/><path d="M12 17v4"/>',
+  discrete:'<circle cx="5.5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18.5" cy="12" r="2"/>',
+  continuous:'<path d="M2.5 12c2.4-6 4.8-6 7.2 0s4.8 6 7.2 0 3.2-3 4.6-2"/>',
+  data:'<ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>',
+  mapping:'<circle cx="7" cy="7" r="3"/><rect x="14" y="4" width="6" height="6" rx="1"/><path d="M7 13.5 10.5 20h-7zM17 14v6M14 17h6"/>',
+  navigation:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  arrangement:'<rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/>',
+  highlight:'<path d="m12 3 2.6 5.5 6 .8-4.4 4.2 1.1 6L12 16.6l-5.3 2.9 1.1-6L3.4 9.3l6-.8z"/>',
+  style:'<path d="M12 3s6 6.8 6 11a6 6 0 0 1-12 0c0-4.2 6-11 6-11z"/>',
+  notes:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>',
+  history:'<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 3.5v4.5h4.5M12 7.5V12l3 2"/>',
+  adds:'<path d="M12 5v14M5 12h14"/>',
+  removes:'<path d="M5 12h14"/>',
+  'removes-adds':'<path d="M4 8h7M7.5 4.5v7M13 17h7"/><path d="M17 4 7 20"/>',
+  alters:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  reorders:'<path d="M7 4v16M4 17l3 3 3-3M17 20V4M14 7l3-3 3 3"/>',
+  repositions:'<path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/>',
+  rescales:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 8v5M8 10.5h5"/>',
+  translates:'<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>',
+  rotates:'<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>',
+  switches:'<path d="M4 8h14M15 5l3 3-3 3M20 16H6M9 13l-3 3 3 3"/>',
+  aggregates:'<path d="M6 4v3a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4M12 13v8"/>',
+  marks:'<path d="m5 12.5 4.5 4.5L19 7"/>',
+  highlights:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>',
+  reveals:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+  records:'<path d="M6 3h12v18l-6-4-6 4z"/>',
+  restores:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  has:'<path d="M5 12.5 9.5 17 19 7"/>',
+  none:'<circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/>',
+  widget:'<path d="M3 12h18"/><circle cx="9" cy="12" r="3" fill="currentColor"/>',
+  select:'<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="4 3"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/>',
+  explore:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+  reconfigure:'<path d="M6 20V7M6 7 3 10M6 7l3 3M18 4v13M18 17l-3-3M18 17l3-3"/>',
+  encode:'<circle cx="7" cy="7" r="3"/><rect x="14" y="4" width="6" height="6" rx="1"/><path d="M7 13.5 10.5 20h-7zM17 14v6M14 17h6"/>',
+  abstract:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M8 10.5h5"/>',
+  filter:'<path d="M3.5 5h17l-6.5 7.5V20l-4-2.5v-5z"/>',
+  connect:'<circle cx="6" cy="7" r="2.5"/><circle cx="18" cy="17" r="2.5"/><path d="m8.1 8.5 7.8 7"/>',
+  register:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>',
+  history:'<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 3.5v4.5h4.5M12 7.5V12l3 2"/>',
+  input:'<ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v9c0 1.4 3.1 2.5 7 2.5M19 6v5"/><path d="M19 15v6M16 18h6"/>',
+  visref:'<path d="M4 20h16M7 16v-4M12 16V7M17 16v-6"/><circle cx="12" cy="7" r="2.2" fill="currentColor"/>',
+  novisref:'<circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/>',
+  item:'<rect x="5" y="5" width="6" height="6" rx="1"/><rect x="13" y="13" width="6" height="6" rx="1"/><rect x="13" y="5" width="6" height="6" rx="1" stroke-dasharray="2 2"/>',
+  attribute:'<path d="M5 20V9M12 20V4M19 20v-7"/><path d="M3 20h18"/>',
+  level:'<path d="m12 3 8 4-8 4-8-4z"/><path d="m4 12 8 4 8-4M4 17l8 4 8-4"/>',
+  link:'<path d="M10 14a4 4 0 0 1 0-5.6l2.5-2.5a4 4 0 1 1 5.6 5.6l-1.2 1.2"/><path d="M14 10a4 4 0 0 1 0 5.6l-2.5 2.5a4 4 0 1 1-5.6-5.6l1.2-1.2"/>',
+  view:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',
+  dataset:'<ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13"/>',
+  note:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>',
+  historyaction:'<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 3.5v4.5h4.5M12 7.5V12l3 2"/>',
+  encoding:'<circle cx="7" cy="7" r="3"/><rect x="14" y="4" width="6" height="6" rx="1"/><path d="M7 13.5 10.5 20h-7zM17 14v6M14 17h6"/>',
+  feeds:'<path d="M3 12h11M11 8l4 4-4 4"/><circle cx="19.5" cy="12" r="2"/>',
+  terminal:'<path d="M4 12h9"/><circle cx="16.5" cy="12" r="3.5"/>',
+  rep:'<path d="M4 20h16M7 16v-4M12 16V7M17 16v-6"/>'
+};
+const ic = k => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${P[k]||P.none}</svg>`;
+
+/* ---------------- labels */
+const T = {
+ pt:{eyebrow:'Tese de Lyncoln · UFF · proposta para discussão', title:'Espaço de Interações',
+   subtitle:'Um gesto do usuário executa uma ação, e a ação produz uma saída no sistema. Clique em qualquer item para ver com o que ele se liga e por que está no mapa.',
+   i:'Interações', a:'Ações', o:'Saídas', i1:'Interação', a1:'Ação', o1:'Saída',
+   iDesc:'o gesto, observável no dispositivo', aDesc:'o que o usuário pede ao sistema', oDesc:'o que muda no sistema (modificação)',
+   tabs:{explore:'Explorar', sim:'Simular', dims:'Dimensões', sources:'Fontes e leitura'},
+   search:'Buscar: zoom, drag, notas…', clear:'limpar', groupby:'agrupar por',
+   gi:{mod:'modalidade', dev:'dispositivo', cont:'continuidade'}, ga:{intent:'intenção', visref:'referência visual', gesture:'gesto nas fontes'}, go:{where:'onde muda', how:'como muda'},
+   show:'mostrar', whyIntent:'Por que esta intenção', extNote:'* extensão: as sete categorias de Yi não cobrem este caso',
+   unclass:'ainda não classificada', unclassShort:'—', expected:'valores previstos', prev:'dimensão anterior', next:'próxima dimensão',
+   fact:'gesto nas fontes (fato, não dimensão)', inUse:'em uso', suggested:'sugestões',
+   moreIn:n=>`outras ${n} deste nível estão como sugestões na aba Dimensões`,
+   suggNote:'Definidas a partir das fontes, mas ainda sem classificação dos itens. Ficam como candidatas: algumas podem mudar de nível, outras podem sair.', otherDims:n=>`outras ${n} dimensões deste nível ainda não foram classificadas`,
+   gesture:{has:'com gesto descrito', none:'sem gesto nas fontes'},
+   nSrc:n=> n===0?'sem fonte': n===1?'1 fonte':`${n} fontes`, noGesture:'sem gesto',
+   why:'Por que está aqui', def:'Definição', input:'Recebe como entrada', obs:'Observação',
+   dims:'Classificação', dimsNote:'classificação proposta pela equipe',
+   executes:'Executa as ações', howExec:'Como é executada', produces:'O que produz', producedBy:'Produzida pelas ações',
+   noSourceI:'Nenhuma das cinco fontes descreve este gesto.', noGestureA:'Nenhuma das cinco fontes descreve com que gesto esta ação é executada. É aqui que o levantamento de sistemas precisa entrar.',
+   role:{D:'define',C:'cita',X:'exclui'}, callsIt:'chama de',
+   orig:{L:'a fonte descreve esta ligação', D:'derivada da definição na fonte', T:'proposta da equipe, sem fonte escrita'},
+   single:'um gesto basta', sequence:'gestos em sequência', alt:n=>`${n} jeitos diferentes de executar — alternativos entre si`,
+   surf:{widget:'num widget', rep:'na representação', none:'sem alvo na tela'},
+   where:'Onde muda', how:'Como muda', empty:'Nada encontrado.', close:'Fechar',
+   facts:(g,z,b,e)=>[`<b>${g} de ${b}</b> ações não têm gesto descrito em nenhuma fonte`, `<b>${e} de ${b}</b> ações caem fora das sete categorias de intenção de Yi`, `Uma mesma ação pode ter <b>vários gestos</b> — Filter tem 6 implementações`],
+   dimIntro:{i:'Descrevem o gesto em si.', a:'Descrevem o pedido que o usuário faz ao sistema.', o:'Descrevem o que muda no sistema.', r:'Descrevem a ligação entre uma ação e os gestos que a executam.', s:'Não classificam itens: organizam o próprio espaço.'},
+   levR:'Ligação ação–interação', levS:'Estruturais', usedFor:'usada para agrupar em Explorar',
+   dOrig:{L:'Definida pela fonte', D:'Derivada da fonte', T:'Proposta da equipe'},
+   cOrig:{L:'a fonte classifica assim', D:'derivada da definição', T:'extensão / decisão da equipe'},
+   srcIntro:'As cinco fontes que formam a base do mapa, e como ler a justificativa de cada item.',
+   legend:['<b>define</b> — a fonte dá uma definição explícita do item.', '<b>cita</b> — a fonte menciona ou dá exemplo do item, sem defini-lo.', '<b>exclui</b> — a fonte diz explicitamente que o item fica fora do escopo dela.', 'Nas ligações: <b>a fonte descreve</b> a ligação; ela é <b>derivada da definição</b>; ou é <b>proposta da equipe</b>, sem apoio escrito.'],
+   mtg:'Reunião de orientação, 17/09/2026', tab1:'Tabela 1'},
+ en:{eyebrow:'Lyncoln’s thesis · UFF · proposal for discussion', title:'Interaction Space',
+   subtitle:'A user interaction performs an action, and the action produces an output in the system. Click any item to see what it connects to and why it is on the map.',
+   i:'Interactions', a:'Actions', o:'Outputs', i1:'Interaction', a1:'Action', o1:'Output',
+   iDesc:'observable at the input device', aDesc:'what the user asks the system to do', oDesc:'what changes in the system (modification)',
+   tabs:{explore:'Explore', sim:'Simulate', dims:'Dimensions', sources:'Sources & reading guide'},
+   search:'Search: zoom, drag, notes…', clear:'clear', groupby:'group by',
+   gi:{mod:'modality', dev:'device', cont:'continuity'}, ga:{intent:'intent', visref:'visual reference', gesture:'interaction in sources'}, go:{where:'where it changes', how:'how it changes'},
+   show:'show', whyIntent:'Why this intent', extNote:'* extension: Yi’s seven categories do not cover this case',
+   unclass:'not classified yet', unclassShort:'—', expected:'expected values', prev:'previous dimension', next:'next dimension',
+   fact:'interaction in sources (a fact, not a dimension)', inUse:'in use', suggested:'suggested',
+   moreIn:n=>`${n} more at this level are listed as suggestions under Dimensions`,
+   suggNote:'Defined from the sources, but with no items classified yet. They stay as candidates: some may move to another level, others may be dropped.', otherDims:n=>`${n} more dimensions of this level are not classified yet`,
+   gesture:{has:'interaction described', none:'no interaction in sources'},
+   nSrc:n=> n===0?'no source': n===1?'1 source':`${n} sources`, noGesture:'no interaction',
+   why:'Why it is here', def:'Definition', input:'Takes as input', obs:'Note',
+   dims:'Classification', dimsNote:'classification proposed by the team',
+   executes:'Performs the actions', howExec:'How it is performed', produces:'What it produces', producedBy:'Produced by the actions',
+   noSourceI:'None of the five sources describes this interaction.', noGestureA:'None of the five sources describes which interaction performs this action. This is where the survey of systems has to come in.',
+   role:{D:'defines',C:'cites',X:'excludes'}, callsIt:'calls it',
+   orig:{L:'the source describes this link', D:'derived from the source’s definition', T:'team proposal, no written source'},
+   single:'one interaction is enough', sequence:'interactions in sequence', alt:n=>`${n} different ways to perform it — alternatives to each other`,
+   surf:{widget:'on a widget', rep:'on the representation', none:'no on-screen target'},
+   where:'Where it changes', how:'How it changes', empty:'Nothing found.', close:'Close',
+   facts:(g,z,b,e)=>[`<b>${g} of ${b}</b> actions have no gesture described in any source`, `<b>${e} of ${b}</b> actions fall outside Yi’s seven intent categories`, `One action can have <b>many gestures</b> — Filter has 6 implementations`],
+   dimIntro:{i:'Describe the interaction itself.', a:'Describe what the user asks the system to do.', o:'Describe what changes in the system.', r:'Describe the link between an action and the interactions that perform it.', s:'They classify no item: they organize the space itself.'},
+   levR:'Action–interaction link', levS:'Structural', usedFor:'used for grouping in Explore',
+   dOrig:{L:'Defined by the source', D:'Derived from the source', T:'Team proposal'},
+   cOrig:{L:'the source classifies it so', D:'derived from the definition', T:'extension / team decision'},
+   srcIntro:'The five sources behind the map, and how to read each item’s justification.',
+   legend:['<b>defines</b> — the source gives an explicit definition of the item.', '<b>cites</b> — the source mentions or exemplifies the item without defining it.', '<b>excludes</b> — the source explicitly places the item outside its scope.', 'For links: <b>the source describes</b> the link; it is <b>derived from the definition</b>; or it is a <b>team proposal</b> without written support.'],
+   mtg:'Advisor meeting, 2026-09-17', tab1:'Table 1'}
+};
+const VAL = {
+ pt:{hand:'mão',voice:'voz',gaze:'olhar',body:'cabeça / corpo',mouse:'mouse',keyboard:'teclado',touch:'tela de toque',pen:'caneta',tangible:'objeto tangível',microphone:'microfone',eyetracker:'rastreador ocular',sensor:'sensor de corpo',discrete:'discreta',continuous:'contínua',
+   data:'dado',mapping:'mapeamento',navigation:'navegação',arrangement:'arranjo',highlight:'destaque / foco',style:'estilo',notes:'notas',history:'histórico',
+   select:'select',explore:'explore',reconfigure:'reconfigure',encode:'encode',abstract:'abstract / elaborate',filter:'filter',connect:'connect',register:'registrar *',history:'gerir histórico *',input:'alimentar dado *',visref:'objeto na tela',novisref:'sem objeto na tela',
+   item:'item',attribute:'atributo',level:'nível de atributo',link:'link',view:'vista',dataset:'dataset *',note:'nota *',historyaction:'ação do histórico *',encoding:'codificação *',feeds:'gera insumo',terminal:'terminal',
+   adds:'acrescenta',removes:'remove','removes-adds':'remove ou acrescenta',alters:'altera',reorders:'reordena',repositions:'reposiciona',rescales:'reescala',translates:'desloca',rotates:'gira',switches:'troca',aggregates:'agrega / desagrega',marks:'marca',highlights:'destaca',reveals:'revela',records:'registra',restores:'restaura'},
+ en:{hand:'hand',voice:'voice',gaze:'gaze',body:'head / body',mouse:'mouse',keyboard:'keyboard',touch:'touch screen',pen:'pen',tangible:'tangible object',microphone:'microphone',eyetracker:'eye tracker',sensor:'body sensor',discrete:'discrete',continuous:'continuous',
+   data:'data',mapping:'mapping',navigation:'navigation',arrangement:'arrangement',highlight:'highlight / focus',style:'style',notes:'notes',history:'history',
+   select:'select',explore:'explore',reconfigure:'reconfigure',encode:'encode',abstract:'abstract / elaborate',filter:'filter',connect:'connect',register:'register *',history:'manage history *',input:'input data *',visref:'on-screen object',novisref:'no on-screen object',
+   item:'item',attribute:'attribute',level:'attribute level',link:'link',view:'view',dataset:'dataset *',note:'note *',historyaction:'history action *',encoding:'encoding *',feeds:'feeds another action',terminal:'terminal',
+   adds:'adds',removes:'removes','removes-adds':'removes or adds',alters:'alters',reorders:'reorders',repositions:'repositions',rescales:'rescales',translates:'translates',rotates:'rotates',switches:'switches',aggregates:'aggregates / disaggregates',marks:'marks',highlights:'highlights',reveals:'reveals',records:'records',restores:'restores'}
+};
+const ORDER = {
+ mod:['hand','voice','gaze','body'], dev:['mouse','keyboard','touch','pen','tangible','microphone','eyetracker','sensor'], cont:['discrete','continuous'],
+ where:['data','mapping','navigation','arrangement','highlight','style','notes','history'],
+ how:['adds','removes','removes-adds','alters','reorders','repositions','rescales','translates','rotates','switches','aggregates','marks','highlights','reveals','records','restores'],
+ gesture:['has','none'],
+ intent:['select','explore','reconfigure','encode','abstract','filter','connect','register','history','input'],
+ visref:['visref','novisref'],
+ element:['item','attribute','level','link','view','dataset','note','historyaction','encoding'],
+ chain:['feeds','terminal']
+};
+/* values of dims shown with icons in the Dimensions tab */
+const DIMKEYS = {DI1:'mod', DI2:'dev', DI3:'cont', DM1:'where', DM2:'how', DA1:'intent', DA2:'element', DA4:'visref', DA7:'chain'};
+const LEVELS = {i:['Interação','Interaction'], a:['Ação','Action'], o:['Modificação','Modification']};
+/* every dimension of a level, classified or not, in the order of the Dimensions tab */
+function dimsOf(t){
+  const ds = D.dims.filter(d=>LEVELS[t].includes(d.level) && DIMKEYS[d.id]).map(d=>({
+    key: DIMKEYS[d.id] || d.id, name: d.name, classified: !!DIMKEYS[d.id],
+    values: DIMKEYS[d.id] ? ORDER[DIMKEYS[d.id]].map(val).join(' · ') : d.values }));
+  if(t==='a') ds.push({key:'gesture', name:L().fact, classified:true, values:ORDER.gesture.map(k=>L().gesture[k]).join(' · ')});
+  return ds.sort((a,b)=> (b.classified?1:0) - (a.classified?1:0));
+}
+const SRC = {
+ YI:{s:'Yi et al. 2007', f:'Yi, J. S., Kang, Y., Stasko, J. T., & Jacko, J. A. (2007). Toward a Deeper Understanding of the Role of Interaction in Information Visualization. IEEE TVCG 13(6), 1224–1231.'},
+ GZ:{s:'Gotz & Zhou 2008', f:'Gotz, D., & Zhou, M. X. (2008). Characterizing Users’ Visual Analytic Activity for Insight Provenance. IEEE VAST 2008, 123–130.'},
+ MU:{s:'Munzner 2014', f:'Munzner, T. (2014). Visualization Analysis and Design. A K Peters/CRC Press. Chapters 3 and 11–13.'},
+ RA:{s:'Ragan et al. 2015', f:'Ragan, E. D., Endert, A., Sanyal, J., & Chen, J. (2015). Characterizing Provenance in Visualization and Data Analysis. IEEE TVCG 22(1), 31–40.'},
+ DP:{s:'Dimara & Perin 2020', f:'Dimara, E., & Perin, C. (2020). What is Interaction for Data Visualization? IEEE TVCG 26(1), 119–129.'}
+};
+
+/* ---------------- state */
+const lang = 'en';
+const st = {tab:'explore', g:{i:0, a:0, o:0}, g2:{i:1, a:3, o:1}, sel:null, q:'', col:'a'};
+
+let D, byI, byA, byO, aiByA, aiByI, amByA, amByO;
+function index(){
+  D = DATA[lang];
+  byI = Object.fromEntries(D.interactions.map(x=>[x.id,x]));
+  byA = Object.fromEntries(D.actions.map(x=>[x.id,x]));
+  byO = Object.fromEntries(D.outputs.map(x=>[x.id,x]));
+  aiByA={}; aiByI={}; amByA={}; amByO={};
+  D.ai.forEach(r=>{(aiByA[r.a]=aiByA[r.a]||[]).push(r); (aiByI[r.i]=aiByI[r.i]||[]).push(r);});
+  D.am.forEach(r=>{(amByA[r.a]=amByA[r.a]||[]).push(r); (amByO[r.m]=amByO[r.m]||[]).push(r);});
+}
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nsrc = marks => Object.values(marks).filter(v=>v).length;
+const L = () => T[lang];
+const val = k => VAL[lang][k] || k;
+const locTxt = l => (l||'').replace(/Tab\.\s*1/,L().tab1);
+
+function dimKeys(type, x, d){ const k = dimKey(type, x, d); return Array.isArray(k) ? k : [k]; }
+function dimKey(type, x, d){
+  if(!d || !d.classified) return 'unclassified';
+  const k = d.key;
+  if(type==='i') return x.dims[k];
+  if(type==='o') return k==='where' ? x.whereKey : x.howKey;
+  return k==='gesture' ? (aiByA[x.id] ? 'has' : 'none') : x.dims[k];
+}
+const dimAt = (t,i) => { const ds = dimsOf(t); return ds[Math.min(i, ds.length-1)]; };
+const suggCount = t => D.dims.filter(d=>LEVELS[t].includes(d.level) && !DIMKEYS[d.id]).length;
+const groupKey = (type, x) => dimKey(type, x, dimAt(type, st.g[type]));
+const orderOf = type => { const d = dimAt(type, st.g[type]); return d.classified ? ORDER[d.key] : ['unclassified']; };
+const keyLabel = (type,d,k) => k==='unclassified' ? L().unclass : (d.key==='gesture' ? L().gesture[k] : val(k));
+
+/* ---------------- links for highlighting */
+function linked(){
+  const s = st.sel, r = {i:{}, a:{}, o:{}};
+  if(!s) return null;
+  const set = (t,id,lv)=>{ if(!r[t][id] || r[t][id]>lv) r[t][id]=lv; };
+  set(s.t, s.id, 0);
+  if(s.t==='i'){ (aiByI[s.id]||[]).forEach(x=>{ set('a',x.a,1); (amByA[x.a]||[]).forEach(m=>set('o',m.m,2)); }); }
+  if(s.t==='a'){ (aiByA[s.id]||[]).forEach(x=>set('i',x.i,1)); (amByA[s.id]||[]).forEach(m=>set('o',m.m,1)); }
+  if(s.t==='o'){ (amByO[s.id]||[]).forEach(m=>{ set('a',m.a,1); (aiByA[m.a]||[]).forEach(x=>set('i',x.i,2)); }); }
+  return r;
+}
+
+/* ---------------- header */
+function renderHeader(){
+  document.documentElement.lang = lang==='pt'?'pt-BR':'en';
+  document.title = L().title;
+  title.textContent = L().title; subtitle.textContent = L().subtitle;
+  const n = {i:D.interactions.length, a:D.actions.length, o:D.outputs.length};
+  chain.innerHTML = ['i','a','o'].map((t,k)=>`${k?'<span class="arrow" aria-hidden="true">→</span>':''}
+    <div class="link ${t}">${ic('level_'+t)}<div><b>${L()[t+'1']}</b><span>${L()[t+'Desc']}</span></div><span class="num">${n[t]}</span></div>`).join('');
+  const noG = D.actions.filter(a=>!aiByA[a.id]).length;
+  const zero = D.interactions.filter(i=>nsrc(i.marks)===0).length;
+  const ext = D.actions.filter(a=>['register','history','input'].includes(a.dims.intent)).length;
+  tabs.innerHTML = Object.entries(L().tabs).map(([k,v])=>`<button type="button" role="tab" id="tab-${k}" data-tab="${k}" aria-selected="${st.tab===k}">${v}</button>`).join('');
+}
+
+/* ---------------- explore */
+function renderExplore(){
+  const lk = linked();
+  const q = st.q.trim().toLowerCase();
+  const col = (t, items, nameOf, metaOf) => {
+    const ds = dimsOf(t), d1 = dimAt(t, st.g[t]), d2 = dimAt(t, st.g2[t]);
+    const slider = (which, d, idx) => `<div class="dimslider"><span class="lab2">${which==='g'?L().groupby:L().show}</span>
+        <button type="button" class="arw" data-${which}="${t}" data-step="-1" aria-label="${L().prev}">‹</button>
+        <span class="dname" title="${esc(d.name)}">${esc(d.name)}</span>
+        <button type="button" class="arw" data-${which}="${t}" data-step="1" aria-label="${L().next}">›</button>
+        <span class="dots">${ds.map((_,k)=>`<i class="${k===idx?'on':''}${ds[k].classified?'':' un'}"></i>`).join('')}</span></div>`;
+    const groups = {};
+    items.filter(x=>!q || (nameOf(x)+' '+(x.desc||x.def||'')).toLowerCase().includes(q))
+         .forEach(x=>{ dimKeys(t,x,d1).forEach(k=>{ (groups[k]=groups[k]||[]).push(x); }); });
+    const body = orderOf(t).filter(k=>groups[k]).map(k=>`<div class="grp"><div class="grp-h">${ic(k==='unclassified'?'none':k)}${esc(keyLabel(t,d1,k))}<span style="margin-left:auto">${groups[k].length}</span></div>
+      ${groups[k].map(x=>{ const lv = lk ? lk[t][x.id] : undefined; const cls = lv===0?'sel':lv===1?'l1':lv===2?'l2':'';
+        const m = metaOf(x); const ks2 = dimKeys(t,x,d2), k2 = ks2[0], more2 = ks2.length-1;
+        return `<button type="button" class="item ${cls}" id="it-${x.id}" data-id2="${k}" data-t="${t}" data-id="${x.id}" aria-pressed="${lv===0}">
+          <span class="ico">${ic(k)}</span>
+          <span class="txt"><span class="nm">${esc(nameOf(x))}</span>
+            <span class="row2"><span class="d2">${k2==='unclassified'?`<span class="k">${esc(d2.name)}:</span> ${L().unclassShort}`:ic(k2)+esc(keyLabel(t,d2,k2))+(more2>0?` +${more2}`:'')}</span><span class="meta ${m[1]||''}">${esc(m[0])}</span></span></span></button>`; }).join('')}
+      </div>`).join('') || `<p class="empty">${L().empty}</p>`;
+    return `<section class="col ${t} ${st.col===t?'show':''}" aria-label="${L()[t]}">
+      <div class="colhead"><div class="t">${ic('level_'+t)}<h2>${L()[t]}</h2><span class="cnt">${items.length}</span></div>
+        ${slider('g', d1, st.g[t])}${slider('g2', d2, st.g2[t])}
+        <p class="dvals">${esc(d1.values)}</p></div>
+      <div class="list ${lk?'hasSel':''}">${body}</div></section>`;
+  };
+  const selName = st.sel ? (st.sel.t==='i'?byI:st.sel.t==='a'?byA:byO)[st.sel.id]?.name : '';
+  main.innerHTML = `<div class="wrap">
+    <div class="toolbar">
+      <input class="search" id="q" type="search" placeholder="${L().search}" value="${esc(st.q)}" aria-label="${L().search}">
+      ${st.sel?`<span class="selpath">${ic('level_'+st.sel.t)}<b>${esc(selName)}</b><button type="button" class="clear" id="clear">${L().clear}</button></span>`:''}
+      <div class="colswitch" role="group">${['i','a','o'].map(t=>`<button type="button" class="${t}" data-col="${t}" aria-pressed="${st.col===t}">${L()[t]}</button>`).join('')}</div>
+    </div>
+    <div class="explorer ${st.sel?'withdetail':''}">
+      ${col('i', D.interactions, x=>x.name, x=>[L().nSrc(nsrc(x.marks)), nsrc(x.marks)?'':'gap'])}
+      ${col('a', D.actions, x=>x.name, x=> aiByA[x.id] ? [L().nSrc(nsrc(x.marks))] : [L().noGesture,'gap'])}
+      ${col('o', D.outputs, x=>x.name, x=>[L().nSrc(nsrc(x.marks))])}
+      <aside class="detail" id="detail" ${st.sel?'':'hidden'} aria-label="detail">${st.sel?renderDetail():''}</aside>
+    </div></div>`;
+  backdrop.classList.toggle('on', !!st.sel && window.innerWidth<=1180);
+  const qi = document.getElementById('q');
+  qi.addEventListener('input', e=>{ st.q = e.target.value; const pos = e.target.selectionStart; renderExplore(); const n=document.getElementById('q'); n.focus(); n.setSelectionRange(pos,pos); });
+}
+
+/* ---------------- detail */
+function whyBlock(x, ev){
+  const out = [];
+  Object.entries(x.marks).filter(([k,v])=>v).forEach(([k,v])=>{
+    const qs = (ev||[]).filter(e=>e.src===k);
+    const nm = x.names && x.names[k];
+    out.push(`<div class="src ${v}"><span class="who"><b>${SRC[k].s}</b><span class="role">${L().role[v]}</span></span>
+      ${nm?`<span class="loc">${L().callsIt}: ${esc(nm)}</span>`:''}
+      ${qs.map(e=>`<blockquote>${esc(e.q)}</blockquote><span class="loc">${esc(locTxt(e.loc))}</span>`).join('')}</div>`);
+  });
+  (ev||[]).filter(e=>e.src==='MTG').forEach(e=> out.push(`<div class="src"><span class="who"><b>${L().mtg}</b> <span class="loc">${esc(e.loc)}</span></span><blockquote>${esc(e.q)}</blockquote></div>`));
+  const plain = (ev||[]).filter(e=>!e.src);
+  if(!out.length) out.push(`<div class="callout">${esc(plain.map(e=>e.q).join(' '))}</div>`);
+  return `<div class="why">${out.join('')}</div>`;
+}
+const chipI = id => `<button type="button" class="chip i" data-t="i" data-id="${id}">${ic(byI[id].dims.mod)}${esc(byI[id].name)}</button>`;
+const chipA = id => `<button type="button" class="chip a" data-t="a" data-id="${id}">${ic('level_a')}${esc(byA[id].name)}</button>`;
+const chipO = id => `<button type="button" class="chip o" data-t="o" data-id="${id}">${ic(byO[id].whereKey)}${esc(byO[id].name)}</button>`;
+const origin = o => `<span class="orig ${o}">${L().orig[o]}</span>`;
+function srcLabel(s){ // "GZ Tab. 1 · MU §13.3" → "Gotz & Zhou 2008 · Tabela 1 · Munzner 2014 §13.3"
+  return (s||'').split('·').map(p=>p.trim()).filter(p=>p && p!=='—').map(p=>{
+    const m = p.match(/^(YI|GZ|MU|RA|DP)\s*(.*)$/); if(m) return `${SRC[m[1]].s} ${locTxt(m[2])}`.trim();
+    if(/^(R17|M17)/.test(p)) return L().mtg; return p; }).join(' · ');
+}
+function implCards(rows){
+  const g = {}; rows.forEach(r=>{(g[r.grp]=g[r.grp]||[]).push(r);});
+  return Object.values(g).map(rs=>{
+    rs.sort((a,b)=>a.order-b.order); const r0 = rs[0]; const seq = rs.length>1;
+    const name = r0.impl || srcLabel(r0.src) || L().orig.T;
+    return `<div class="impl"><div class="ih"><b>${esc(name)}</b><span class="loc">${esc(seq?L().sequence:L().single)}</span>
+        <span class="surf">${ic(r0.surface)}${L().surf[r0.surface]}</span></div>
+      <div class="seq">${rs.map((r,k)=>(k?'<span class="sep">→</span>':'')+chipI(r.i)).join('')}</div>
+      ${rs.filter(r=>r.q).map(r=>`<blockquote>${esc(r.q)}</blockquote>`).join('')}
+      <span class="loc">${r0.src?esc(srcLabel(r0.src))+' — ':''}${origin(r0.origin)}</span></div>`;
+  }).join('');
+}
+function renderDetail(){
+  const s = st.sel, t = s.t;
+  const col = {i:'var(--int)',a:'var(--act)',o:'var(--out)'}[t];
+  let x, head, body = '';
+  if(t==='i'){
+    x = byI[s.id];
+    head = ic(x.dims.mod);
+    const acts = aiByI[x.id]||[]; const uniq = [...new Set(acts.map(r=>r.a))];
+    body = `<p class="lead">${esc(x.desc)}</p>
+      <section><span class="lab">${L().dims}</span><div class="chips">${['mod','dev','cont'].map(d=>`<span class="chip">${ic(x.dims[d])}<span class="k">${L().gi[d]}:</span> ${esc(val(x.dims[d]))}</span>`).join('')}</div><span class="loc">${L().dimsNote} · ${L().moreIn(suggCount('i'))}</span></section>
+      <section><span class="lab">${L().why}</span>${nsrc(x.marks)||x.ev.some(e=>e.src)?whyBlock(x,x.ev):`<div class="callout">${L().noSourceI} ${esc(x.note)}</div>`}</section>
+      ${x.note && nsrc(x.marks)?`<section><span class="lab">${L().obs}</span><p class="note">${esc(x.note)}</p></section>`:''}
+      <section><span class="lab">${L().executes}</span>${uniq.length?uniq.map(a=>{ const r = acts.find(z=>z.a===a);
+          return `<div class="prod">${chipA(a)}<span class="loc">${esc(r.impl||srcLabel(r.src)||'')}${(r.impl||r.src)?' · ':''}${L().surf[r.surface]} — ${origin(r.origin)}</span></div>`;}).join(''):'<p class="note">—</p>'}</section>`;
+  }
+  if(t==='a'){
+    x = byA[s.id];
+    head = ic('level_a');
+    const ims = aiByA[x.id]||[]; const nImpl = new Set(ims.map(r=>r.grp)).size;
+    body = `<section><span class="lab">${L().dims}</span><div class="chips">
+        <span class="chip">${ic(x.dims.intent)}<span class="k">${L().ga.intent}:</span> ${esc(val(x.dims.intent))}</span>
+        ${x.dims.element.map(e=>`<span class="chip">${ic(e)}${esc(val(e))}</span>`).join('')}
+        <span class="chip">${ic(x.dims.visref)}<span class="k">${L().ga.visref}:</span> ${esc(val(x.dims.visref))}</span>
+        <span class="chip">${ic(x.dims.chain)}${esc(val(x.dims.chain))}</span></div>
+        ${x.chainWhy?`<span class="loc">${esc(x.chainWhy)}</span>`:''}
+        <span class="loc">${L().moreIn(suggCount('a'))}</span>
+        <div class="src ${x.intentOrigin==='T'?'X':''}"><span class="who"><span class="role">${L().cOrig[x.intentOrigin]}</span></span><p class="lead">${esc(x.intentWhy)}</p></div>
+        ${x.dims.intent==='register'||x.dims.intent==='history'||x.dims.intent==='input'?`<span class="loc">${L().extNote}</span>`:''}</section>
+      <section><span class="lab">${L().def}</span><blockquote>${esc(x.def)}</blockquote><span class="loc">${esc(srcLabel(x.defsrc))}</span></section>
+      <section><span class="lab">${L().why}</span>${whyBlock(x,[])}</section>
+      <section><span class="lab">${L().howExec}</span>${ims.length?`<span class="loc">${nImpl>1?L().alt(nImpl):''}</span>${implCards(ims)}`:`<div class="callout">${L().noGestureA}</div>`}</section>
+      <section><span class="lab">${L().produces}</span>${(amByA[x.id]||[]).map(m=>`<div class="prod">${chipO(m.m)}${m.note?`<span class="lead" style="font-size:.84rem">${esc(m.note)}</span>`:''}<span class="loc">${esc(srcLabel(m.src))} — ${origin(m.origin)}</span></div>`).join('')}</section>
+      ${x.input?`<section><span class="lab">${L().input}</span><p class="note">${esc(x.input)}</p></section>`:''}
+      ${x.note?`<section><span class="lab">${L().obs}</span><p class="note">${esc(x.note)}</p></section>`:''}`;
+  }
+  if(t==='o'){
+    x = byO[s.id];
+    head = ic(x.whereKey);
+    body = `<section><span class="lab">${L().dims}</span><div class="chips">
+        <span class="chip">${ic(x.whereKey)}<span class="k">${L().where}:</span> ${esc(val(x.whereKey))}</span>
+        <span class="chip">${ic(x.howKey)}<span class="k">${L().how}:</span> ${esc(val(x.howKey))}</span></div>
+        <span class="loc">${L().moreIn(suggCount('o'))}</span></section>
+      <section><span class="lab">${L().why}</span>${whyBlock(x,x.ev)}</section>
+      ${x.note?`<section><span class="lab">${L().obs}</span><p class="note">${esc(x.note)}</p></section>`:''}
+      <section><span class="lab">${L().producedBy}</span>${(amByO[x.id]||[]).map(m=>`<div class="prod">${chipA(m.a)}<span class="loc">${esc(srcLabel(m.src))} — ${origin(m.origin)}</span></div>`).join('')}</section>`;
+  }
+  return `<div class="dhead"><div class="row"><span class="ico" style="background:${col}">${head}</span>
+      <div><span class="lab">${L()[t+'1']}</span><h2 class="${t==='i'?'mono':''}">${esc(x.name)}</h2></div>
+      <button type="button" class="x" id="close" aria-label="${L().close}">×</button></div>
+      <button type="button" class="simgo" data-simt="${t}" data-simid="${x.id}">▶ ${S_.simulate}</button></div>
+    <div class="dbody">${body}</div>`;
+}
+
+/* ---------------- dimensions tab */
+function parseQ(q){ return q.split(' · ').map(p=>{ const m = p.match(/^(YI|GZ|MU|RA|DP)\s*([^:]*?):\s*(.*)$/); return m?{s:SRC[m[1]].s+' '+locTxt(m[2]), q:m[3]}:{s:'',q:p}; }); }
+function renderDims(){
+  const lv = {i:['Interação','Interaction'], a:['Ação','Action'], o:['Modificação','Modification'], r:['Relação A×I','Relation A×I'], s:['Estrutural','Structural']};
+  const sec = (k, title, icon) => {
+    const all = D.dims.filter(d=>lv[k].includes(d.level));
+    const used = all.filter(d=>DIMKEYS[d.id]), sugg = all.filter(d=>!DIMKEYS[d.id]);
+    const cards = ds => `<div class="dimgrid">${ds.map(d=>{
+        const key = DIMKEYS[d.id];
+        const vals = key ? ORDER[key].filter(v=>v!=='removes-adds').map(v=>`<span class="chip">${ic(v)}${esc(val(v))}</span>`).join('')
+                         : d.values.split(/;\s*/).filter(v=>v && v!=='—').map(v=>`<span class="chip">${esc(v)}</span>`).join('');
+        const used = !!DIMKEYS[d.id];
+        return `<article class="dim"><div><h3>${esc(d.name)}</h3>${used?`<span class="used">${L().usedFor}</span>`:''}</div>
+          ${vals?`<div class="chips">${vals}</div>`:''}
+          <div class="src ${d.origin==='L'?'D':''}"><span class="who"><b>${L().dOrig[d.origin]||''}</b></span>
+          ${parseQ(d.q).map(p=>`<blockquote>${esc(p.q)}</blockquote>${p.s?`<span class="loc">${esc(p.s)}</span>`:''}`).join('')}</div>
+          ${d.note?`<p class="note">${esc(d.note)}</p>`:''}</article>`; }).join('')}</div>`;
+    return `<section class="dimsec ${k}"><header>${icon?ic(icon):''}<h2>${title}</h2></header><p>${L().dimIntro[k]}</p>
+      ${used.length?`<p class="lab">${L().inUse} · ${used.length}</p>${cards(used)}`:''}
+      ${sugg.length?`<div class="sugg"><p class="lab">${L().suggested} · ${sugg.length}</p><p class="sugnote">${L().suggNote}</p>${cards(sugg)}</div>`:''}</section>`;
+  };
+  main.innerHTML = `<div class="wrap page">${sec('i',L().i,'level_i')}${sec('a',L().a,'level_a')}${sec('o',L().o,'level_o')}${sec('r',L().levR,'')}${sec('s',L().levS,'')}</div>`;
+  backdrop.classList.remove('on');
+}
+
+/* ---------------- sources tab */
+function renderSources(){
+  main.innerHTML = `<div class="wrap page"><section class="dimsec"><h2>${L().tabs.sources}</h2><p>${L().srcIntro}</p></section>
+    <div class="refs">${Object.entries(SRC).map(([k,s])=>{
+      const cnt = ['interactions','actions','outputs'].reduce((n,c)=>n + D[c].filter(x=>x.marks[k]).length, 0);
+      return `<div class="ref"><b>${s.s}</b><span>${esc(s.f)}</span><span class="loc">${cnt} ${lang==='pt'?'itens do mapa':'items on the map'}</span></div>`; }).join('')}
+</div>
+    <div class="legend">${L().legend.map(l=>`<p>${l}</p>`).join('')}</div></div>`;
+  backdrop.classList.remove('on');
+}
+
+/* ================= SIMULATOR — interaction → action → output =================
+   Lives inside the page IIFE. Uses D, byI, byA, byO, aiByA, aiByI, amByA, amByO, L(), val(), ic(), esc(), st, srcLabel.
+   Scene: a made-up scatter plot (12 items, 3 categories), a widget panel, a history strip and a bookmark strip.
+   Each (interaction, action) pair gets a READING (plan): where the interaction lands, what it picks as operand,
+   whether it drives the action continuously, and which parameter it supplies. The output then depends on that reading. */
+const SIM = { i: null, a: null, m: null, t: 0, playing: false, loop: true, raf: 0, last: 0 };
+const DUR = { g: 1.7, a: 0.5, e: 1.9, hold: 1.1 };
+const TOTAL = DUR.g + DUR.a + DUR.e + DUR.hold;
+const PTS = [
+  {x:.10,y:.30,c:0},{x:.20,y:.62,c:1},{x:.29,y:.44,c:0},{x:.37,y:.82,c:2},{x:.45,y:.24,c:1},{x:.53,y:.56,c:2},
+  {x:.61,y:.71,c:0},{x:.67,y:.36,c:1},{x:.75,y:.86,c:2},{x:.82,y:.49,c:0},{x:.88,y:.19,c:1},{x:.95,y:.66,c:2}];
+const FOCUS = 5;
+const PX = 40, PY = 30, PW = 340, PH = 230;
+const X = x => PX + x * PW, Y = y => PY + PH - y * PH;
+const IX = px => (px - PX) / PW, IY = py => (PY + PH - py) / PH;
+const clamp = v => Math.max(0, Math.min(1, v));
+const ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+const lerp = (a, b, t) => a + (b - a) * t;
+
+const S_ = {
+  tab:'Simulate', title:'Simulate an interaction',
+  lead:'Pick the interaction, the action and the output. Play shows the interaction performing the action and the change it produces. The same interaction can mean different things for different actions — the reading below the animation says how this pair is interpreted. Illustrative simulation on a made-up chart; it does not reproduce a real system.',
+  pickI:'1 · Interaction', pickA:'2 · Action', pickM:'3 · Output', play:'Play', pause:'Pause', loop:'loop',
+  random:'Pick a combination described in the sources',
+  described:(impl, src) => `Combination described in the sources${impl ? ` — ${impl}` : ''}${src ? ` (${src})` : ''}.`,
+  team:'Combination proposed by the team, no written source.',
+  hypo:'Hypothetical combination: none of the sources describes this interaction for this action.',
+  step1:'interaction', step2:'action', step3:'output', dot:'● = interaction described in the sources for this action',
+  reading:'How this pair is read', weak:'weak pairing',
+  roleLab:{ trigger:'triggers the action', operand:'picks the operand', continuous:'drives it continuously', parameter:'supplies a parameter' },
+  onw:{ widget:'on a widget', rep:'on the representation', none:'no on-screen target', history:'on the history' },
+  search:'search…', hist:'history', marks:'bookmarks', empty:'empty — every action is recorded here',
+  mean:'mean', notes:'notes', item:'item', price:'price', simulate:'Simulate', now:'now',
+  story:{ A39:'Undo drops the last step (sort): the chart goes back to how it was after zoom.',
+          A40:'Redo re-applies the undone step (sort): the items line up again.',
+          A41:'Reset clears every step: the chart returns to its initial state.',
+          A42:'Delete removes zoom from the middle of the history: filter and sort are re-run without it.',
+          A43:'Edit changes the filter from price > 50 to price > 30: the steps after it are re-run, and more items come back.',
+          A44:'Revisit goes back to the state right after filter; zoom and sort stay in the history as later steps.',
+          A07:'Restore brings back the saved bookmark (“filter only”): the chart jumps to that state.' }
+};
+const TXT = { A01:'price > 50', A02:'price > 50', A03:'category = B', A04:'sales_2025.csv', A05:'55 → 72', A06:'mean(price)', A16:'sort by price',
+  A28:'category C', A29:'category C', A30:'category C', A33:'peak in March', A35:'check outliers', A36:'check outliers ✓', A37:'delete note', A38:'hypothesis: seasonal',
+  A32:'item 6', A23:'show as bars', A24:'size by price', A43:'price > 30', A08:'zoom in', A10:'move right', A21:'group by category', A11:'rotate' };
+const KEYS = { A39:'Ctrl Z', A40:'Ctrl Y', A42:'Del', A10:'→', A08:'+', A09:'+', A11:'R', A28:'Shift', A29:'H', A41:'Esc', A34:'Ctrl D', A43:'F2', A44:'Alt ←', A07:'Ctrl R', A16:'S', A02:'F', A33:'N', A35:'N' };
+const txtFor = a => TXT[a] || byA[a].name;
+const shortName = a => byA[a].name.split(/ \/ | \(/)[0];
+
+/* ---------- action kinds ---------- */
+const MAGNITUDE = ['A02','A08','A09','A10','A11','A12','A13','A15','A18','A24','A25'];          /* a quantity: amount, range, angle, threshold */
+const OPERAND   = ['A05','A17','A19','A20','A21','A22','A26','A27','A28','A29','A30','A31','A32','A33']; /* acts on chosen items */
+const HISTORY   = ['A07','A39','A40','A41','A42','A43','A44'];
+const kindOf = a => HISTORY.includes(a) ? 'history' : MAGNITUDE.includes(a) ? 'magnitude' : OPERAND.includes(a) ? 'operand' : 'global';
+const PARAM = { A02:'price threshold', A08:'zoom level', A09:'zoom level', A10:'view position', A11:'angle', A12:'slice value', A13:'cutting plane', A15:'view position', A18:'baseline', A24:'mark size', A25:'size range' };
+
+function relFor(a, i){ return D.ai.find(r => r.a === a && r.i === i); }
+function widgetKind(label){
+  const l = (label || '').toLowerCase();
+  if (l.includes('slider')) return 'slider';
+  if (l.includes('checkbox')) return 'checkbox';
+  if (l.includes('menu')) return 'menu';
+  if (l.includes('scroll')) return 'scrollbar';
+  if (l.includes('field') || l.includes('campo') || l.includes('shelf') || l.includes('painel')) return 'field';
+  return 'button';
+}
+
+/* ---------- geometry of targets ---------- */
+const FP = () => ({ x: X(PTS[FOCUS].x), y: Y(PTS[FOCUS].y) });
+/* widgets exist only when the interaction uses them; they share one slot on the right, below the linked view */
+const W = { slider:{x:450, y:195, x2:530, y2:195}, checkbox:{x:434, y:195}, button:{x:495, y:195}, field:{x:495, y:195}, attr:{x:458, y:150}, scrollbar:{x:150, y:276, x2:250, y2:276}, bookmark:{x:458, y:318} };
+const CHIPX = k => 40 + k * 90;
+const CHIP_OF = { A39:2, A40:2, A42:1, A43:0, A44:0 };
+/* region interactions: the enclosed set is computed from the same shape that is drawn, and the shapes
+   are placed so that no item sits on the boundary (every item is ≥ ~20 px inside or outside) */
+const LASSO = { cx: 204, cy: 94, rx: 72, ry: 62, a0: -2.2 };
+const LSTART = { x: LASSO.cx + LASSO.rx * Math.cos(LASSO.a0), y: LASSO.cy + LASSO.ry * Math.sin(LASSO.a0) };
+const RECT = { x: 150, y: 48, w: 125, h: 100 };
+function inLasso(p){ return ((X(p.x) - LASSO.cx) / LASSO.rx)**2 + ((Y(p.y) - LASSO.cy) / LASSO.ry)**2 <= 1; }
+function inRect(p){ const x = X(p.x), y = Y(p.y); return x >= RECT.x && x <= RECT.x + RECT.w && y >= RECT.y && y <= RECT.y + RECT.h; }
+const LASSO_SET = () => PTS.map((p, k) => inLasso(p) ? k : -1).filter(k => k >= 0);
+const RECT_SET = () => PTS.map((p, k) => inRect(p) ? k : -1).filter(k => k >= 0);
+const CAT_SET = c => PTS.map((p, k) => p.c === c ? k : -1).filter(k => k >= 0);
+
+/* ---------- the reading of each (interaction, action) pair ---------- */
+const REGION_READ = {
+  A02:'The lasso picks the enclosed items: only they remain (filter by selection).',
+  A03:'The lasso picks the enclosed data items: they go into the output subset, and the view keeps only them.',
+  A08:'The lasso marks a region: the view zooms to fit the enclosed items.',
+  A09:'The lasso marks a region: the view zooms to fit it and the marks adapt.',
+  A10:'The lasso marks a region: the view recenters on it.',
+  A15:'The lasso marks a region: the view recenters on it, and the linked view follows.',
+  A16:'The lasso picks the enclosed items: only they are reordered, within the positions they already occupy.',
+  A21:'The lasso picks the enclosed items: they are aggregated into a single mark.',
+  A23:'The lasso picks the enclosed items: only they switch encoding.',
+  A24:'The lasso picks the enclosed items: only they get the new channel.',
+  A32:'The lasso picks the enclosed items: the details summarize the group.',
+  A33:'The lasso picks the enclosed items: the annotation is attached to the group.' };
+function plan(a, i){
+  const P = plan0(a, i);
+  if (a === 'A03' && !P.scope && !P.weak) { P.scope = CAT_SET(1); P.reading += ' The condition (category = B) defines the subset, which goes into the output.'; }
+  if (['A19','A20','A21'].includes(a) && P.scope && P.scope.length === 1) P.scope = CAT_SET(PTS[P.scope[0]].c);
+  return P;
+}
+function plan0(a, i){
+  const n = byI[i].name, k = kindOf(a), r = relFor(a, i), lab = shortName(a);
+  const P = { role:'trigger', surface:'widget', target:{ kind:'button', ...W.button }, scope:null, live:false, weak:false, variant:'cmd', button:lab, reading:'' };
+  const V = { click:'Click', 'double-click':'Double-click', 'right-click':'Right-click', touch:'Tap', hover:'Hover over', gaze:'Look at', point:'Point at', 'place object':'Place a token on' }[n] || 'Use';
+  const wk = r && r.surface === 'widget' ? widgetKind(r.surfaceLabel) : null;
+  const set = (o) => Object.assign(P, o);
+  const PICKS = ['click','double-click','right-click','touch','hover','gaze','point','place object'];
+
+  /* a widget named by the source wins */
+  if (wk === 'slider')    { set({ role:'continuous', live:true, target:{ kind:'slider', ...W.slider }, variant:'slider', reading:`Dragging the slider changes the ${PARAM[a] || 'parameter'} continuously — the chart updates during the drag.` }); return P; }
+  if (wk === 'checkbox')  { set({ role:'parameter', target:{ kind:'checkbox', ...W.checkbox }, variant:'category', reading:'Unticking “show category B” sets the condition: category B leaves the view.' }); return P; }
+  if (wk === 'scrollbar') { set({ role:'continuous', live:true, target:{ kind:'scrollbar', ...W.scrollbar }, variant:'scrollbar', reading:'Dragging the scrollbar moves the view continuously.' }); return P; }
+  if (wk === 'field' && n === 'drag') { set({ role:'parameter', target:{ kind:'field', ...W.field, x2:W.field.x, y2:W.field.y }, variant:'shelf', reading:`Dropping the attribute on a shelf tells the system how to ${lab.toLowerCase()}.` }); P.target = { kind:'drop', x:W.attr.x, y:W.attr.y, x2:W.field.x, y2:W.field.y }; return P; }
+
+  /* history: the operand is a step of the history (or the bookmark) */
+  if (k === 'history'){
+    set({ surface:'history' });
+    const chipIdx = CHIP_OF[a];
+    const onChip = chipIdx != null ? { kind:'chip', x:CHIPX(chipIdx) + 42, y:316 } : a === 'A07' ? { kind:'bookmark', ...W.bookmark } : null;
+    if (['key','voice'].includes(n)){ set({ surface:'none', target:{ kind:'none' }, variant:'cmd', reading: n === 'key' ? `The shortcut ${KEYS[a] || '↵'} applies ${lab} to the current history.` : `The spoken command “${lab.toLowerCase()}” applies it to the current history.` }); return P; }
+    if (n === 'drag' && onChip){
+      if (a === 'A42') set({ role:'operand', target:{ ...onChip, kind:'drop', x2:onChip.x + 30, y2:onChip.y + 24 }, variant:'dragout', reading:'Dragging the “zoom” step out of the history removes it; the steps after it are re-run.' });
+      else if (a === 'A07') set({ role:'operand', target:{ ...onChip, kind:'drop', x2:X(.5), y2:Y(.5) }, variant:'dragin', reading:'Dragging the saved bookmark onto the chart restores that state.' });
+      else { const tp = STORIES[a].tip, cx = j => j < 0 ? 22 : CHIPX(j) + 42; set({ role:'operand', target:{ kind:'drop', x:cx(tp[0]), y:338, x2:cx(tp[1]), y2:338 }, variant:'marker', reading:'Dragging the “now” marker along the history moves the analysis to that step.' }); }
+      return P;
+    }
+    if (PICKS.includes(n) && onChip){
+      const verb = n === 'right-click' ? 'Right-click' : V;
+      const stepLab = a === 'A07' ? 'saved bookmark' : `“${STEP[STORIES[a].chips[chipIdx][0]].lab.replace(/\s+/g, ' ')}” step in the history`;
+      set({ role:'operand', target:onChip, variant:n === 'right-click' ? 'menu' : 'pick',
+            reading: n === 'right-click' ? `Right-clicking the ${stepLab} opens its menu; choosing “${lab}” acts on that step.` : `${verb} the ${stepLab}: ${lab} acts on it.` });
+      return P;
+    }
+    if (PICKS.includes(n)){ set({ reading:`${V} the “${lab}” button: it acts on the whole history.` }); return P; }
+    set({ weak:true, surface:'none', target:{ kind:'none' }, reading:'No natural reading for this pair — here the interaction only triggers the action.' });
+    return P;
+  }
+
+  switch (n){
+    case 'brush / lasso':
+      set({ role:'operand', surface:'rep', target:{ kind:'region', ...LSTART }, scope:LASSO_SET(), variant:'region', reading: REGION_READ[a] || `The lasso picks the enclosed items; ${lab} applies only to them.` });
+      if ((k === 'global' && !REGION_READ[a]) || (k === 'magnitude' && !REGION_READ[a])) set({ weak:true, scope:null, reading:`The lasso encloses items, but ${lab} does not take items as operand — here it only triggers the action, on the whole view.` });
+      return P;
+    case 'draw':
+      if (a === 'A02' || a === 'A01') { set({ role:'parameter', surface:'rep', target:{ kind:'sketch', ...FP() }, variant:'sketch', reading:'The drawn curve is the query: only items that follow the curve remain.' }); return P; }
+      if (a === 'A13') { set({ role:'continuous', live:true, surface:'rep', target:{ kind:'line', ...FP() }, variant:'cutline', reading:'The drawn line is the cutting plane: everything left of it is hidden.' }); return P; }
+      if (['A35','A36','A38','A33'].includes(a)) { set({ role:'parameter', surface:'rep', target:{ kind:'sketch', ...FP() }, variant:'handwrite', reading:'The note is handwritten on the chart; the stroke is the content.' }); return P; }
+      set({ role:'operand', surface:'rep', target:{ kind:'loop', ...LSTART }, scope:LASSO_SET(), variant:'region', reading: REGION_READ[a] ? REGION_READ[a].replace('The lasso', 'The drawn loop') : `Drawing a loop around items picks them; ${lab} applies only to them.` });
+      if ((k !== 'operand' && !REGION_READ[a]) || (k === 'magnitude' && !REGION_READ[a])) set({ weak:true, scope:null, reading:`The loop encloses items, but ${lab} does not take items as operand — here it only triggers the action, on the whole view.` });
+      return P;
+    case 'type':
+      set({ role:'parameter', target:{ kind:'field', ...W.field }, variant:'text', reading:`Typing gives the parameter as text: “${txtFor(a)}”.` });
+      if (['A28','A29','A30'].includes(a)) set({ scope:CAT_SET(2) });
+      return P;
+    case 'voice':
+      set({ role:'trigger', surface:'none', target:{ kind:'none' }, variant:'text', reading:`The spoken command names the action and its parameter: “${txtFor(a)}”.` });
+      if (['A28','A29','A30'].includes(a)) set({ scope:CAT_SET(2) });
+      return P;
+    case 'key':
+      set({ surface:'none', target:{ kind:'none' }, variant:'key', reading:`The shortcut ${KEYS[a] || '↵'} applies ${lab} to the current view.` });
+      if (a === 'A28') set({ role:'operand', scope:[FOCUS, 6], reading:'Shift extends the current selection to the next item.' });
+      else if (k === 'operand') set({ scope:[FOCUS], reading:`The shortcut ${KEYS[a] || '↵'} applies ${lab} to the item that has the focus.` });
+      else if (k === 'magnitude') set({ role:'parameter', reading:`Each press of ${KEYS[a] || '↵'} changes the ${PARAM[a] || 'parameter'} by one step.` });
+      return P;
+    case 'drag':
+      if (k === 'magnitude'){
+        if (a === 'A08') { set({ role:'operand', surface:'rep', target:{ kind:'rect', x:RECT.x, y:RECT.y }, variant:'rubber', reading:'Dragging a rectangle marks the region to zoom into.' }); return P; }
+        if (['A02','A24','A25','A09'].includes(a)) { set({ role:'continuous', live:true, target:{ kind:'slider', ...W.slider }, variant:'slider', reading:`Dragging the slider changes the ${PARAM[a]} continuously — the chart updates during the drag.` }); return P; }
+        set({ role:'continuous', live:true, surface:'rep', target:{ kind:'drop', ...FP(), x2:X(.80), y2:Y(.88) }, variant:'direct', reading:`Dragging on the chart drives the ${PARAM[a] || 'parameter'} directly — the chart follows the drag.` }); return P;
+      }
+      if (k === 'operand'){
+        if (['A28','A29','A30','A21','A32'].includes(a)) { set({ role:'operand', surface:'rep', target:{ kind:'rect', x:RECT.x, y:RECT.y }, scope:RECT_SET(), variant:'region', reading:`Dragging a rectangle picks the items inside; ${lab} applies only to them.` }); return P; }
+        set({ role:'operand', live:true, surface:'rep', target:{ kind:'drop', ...FP(), x2:X(.80), y2:Y(.88) }, scope:[FOCUS], variant:'move', reading:`Dragging the item carries it: the item is the operand, the drop point is the parameter.` }); return P;
+      }
+      if (a === 'A04') { set({ role:'parameter', surface:'rep', target:{ kind:'drop', x:585, y:40, x2:X(.5), y2:Y(.5) }, variant:'file', reading:'Dragging a data file onto the chart brings its data in.' }); return P; }
+      if (a === 'A16') { set({ role:'continuous', live:true, surface:'rep', target:{ kind:'drop', ...FP(), x2:X(.53), y2:Y(.56) }, variant:'manualsort', reading:'Dragging items into place sorts them by hand (Dimara & Perin §6.2: “rearranging data points manually”).' }); P.target = { kind:'drop', x:X(PTS[10].x), y:Y(PTS[10].y), x2:X(.05), y2:Y(PTS[10].y) }; return P; }
+      if (a === 'A23') { set({ role:'parameter', target:{ kind:'drop', x:W.attr.x, y:W.attr.y, x2:W.field.x, y2:W.field.y }, variant:'shelf', reading:'Dropping the attribute on a shelf switches the encoding.' }); return P; }
+      set({ weak:true, reading:`No natural reading for dragging here — it only triggers ${lab}.` }); return P;
+    case 'scroll': case 'pinch':
+      if (['A08','A09','A10','A15','A11','A02','A24','A25'].includes(a)){
+        const par = n === 'pinch' && a === 'A11' ? 'angle' : PARAM[a];
+        set({ role:'continuous', live:true, surface:'rep', target:{ kind:'plot', ...FP() }, variant:'direct', reading:`${n === 'pinch' ? 'Pinching' : 'Scrolling'} drives the ${par} continuously, around the point under the ${n === 'pinch' ? 'fingers' : 'cursor'}.` });
+        return P;
+      }
+      set({ weak:true, surface:'none', target:{ kind:'plot', ...FP() }, reading:`No natural reading for ${n} here — it only triggers ${lab}.` }); return P;
+    case 'approach':
+      if (['A08','A09','A32'].includes(a)) { set({ role:'continuous', live:true, surface:'none', target:{ kind:'plot', ...FP() }, variant:'proxemic', reading:`Moving closer to the display drives ${lab.toLowerCase()} continuously (proxemic interaction).` }); return P; }
+      set({ weak:true, surface:'none', target:{ kind:'none' }, reading:'No natural reading for approaching the display here — it only triggers the action.' }); return P;
+    case 'body / head':
+      if (['A10','A11','A15'].includes(a)) { set({ role:'continuous', live:true, surface:'none', target:{ kind:'plot', ...FP() }, variant:'lean', reading:`Leaning drives the ${PARAM[a]} continuously.` }); return P; }
+      set({ weak:true, surface:'none', target:{ kind:'none' }, reading:'No natural reading for a body movement here — it only triggers the action.' }); return P;
+  }
+  /* point-and-pick interactions */
+  if (PICKS.includes(n)){
+    const menu = n === 'right-click';
+    if (k === 'operand' || (k === 'magnitude' && ['A08','A09','A10','A15','A18','A12'].includes(a)) || a === 'A05'){
+      set({ role:'operand', surface:'rep', target:{ kind:menu ? 'menu' : 'point', ...FP() }, scope:[FOCUS], variant:'pick',
+            reading: menu ? `Right-clicking the item opens its menu; choosing “${lab}” applies it to that item.` :
+                    k === 'magnitude' ? `${V} a point: it becomes the anchor of ${lab.toLowerCase()} (${PARAM[a]}).` : `${V} an item: it becomes the operand of ${lab}.` });
+      if (a === 'A12') P.scope = CAT_SET(PTS[FOCUS].c);
+      if (['A19','A20','A21'].includes(a)) { P.scope = CAT_SET(PTS[FOCUS].c); if (!menu) P.reading = `${V} an item: its group (category ${'ABC'[PTS[FOCUS].c]}) is the operand of ${lab}.`; }
+      if (n === 'hover' && ['A28','A29','A30','A31','A32'].includes(a)) set({ transient:true, reading:`Hovering over an item applies ${lab} while the cursor stays; it disappears when the cursor leaves (transitory).` });
+      if (n === 'place object') P.reading = `Placing a token on an item makes it the operand of ${lab}.`;
+      return P;
+    }
+    if (a === 'A02' && ['click','touch','double-click'].includes(n)){ set({ role:'operand', surface:'rep', target:{ kind:'point', ...FP() }, scope:CAT_SET(PTS[FOCUS].c), variant:'example', reading:`${V} an item to filter by example: only items of its category remain.` }); return P; }
+    if (menu){ set({ role:'trigger', surface:'rep', target:{ kind:'menu', ...FP() }, variant:'cmd', reading:`Right-clicking the chart opens a menu; choosing “${lab}” applies it to all items.` }); return P; }
+    set({ reading: n === 'place object' ? `Placing a token on the “${lab}” area triggers it for all items (tangible command).` : `${V} the “${lab}” button: the action applies to all items.`, weak: ['hover','point'].includes(n) });
+    if (n === 'hover') P.reading = `Hovering over the “${lab}” button (dwell) triggers it — a weak pairing.`;
+    return P;
+  }
+  return P;
+}
+
+/* ---------- history as a state model ---------- */
+const STEP = { F:{ k:'F', lab:'filter  >50', thr:.45 }, F30:{ k:'F', lab:'filter  >30', thr:.3 }, Z:{ k:'Z', lab:'zoom ×1.6' }, S:{ k:'S', lab:'sort' } };
+function stateOf(steps){
+  const pts = PTS.map((p, k) => ({ x:p.x, y:p.y, c:p.c, r:6, op:1, ring:0, k }));
+  const view = { s:1, tx:0, ty:0, rot:0, fx:X(.55), fy:Y(.6) };
+  for (const s of steps){
+    if (s.k === 'F') pts.forEach(p => { if (p.y < s.thr) p.op = .07; });
+    if (s.k === 'Z') view.s = 1.6;
+    if (s.k === 'S'){ const order = [...PTS.keys()].sort((i, j) => PTS[i].y - PTS[j].y); order.forEach((k, rank) => { pts[k].x = .05 + rank * .082; }); }
+  }
+  return { pts, view };
+}
+function mix(A, B, t){
+  const pts = A.pts.map((p, k) => ({ ...p, x: lerp(p.x, B.pts[k].x, t), y: lerp(p.y, B.pts[k].y, t), op: lerp(p.op, B.pts[k].op, t) }));
+  return { pts, view: { ...A.view, s: lerp(A.view.s, B.view.s, t) } };
+}
+const STORIES = {
+  A39:{ before:['F','Z','S'], after:['F','Z'],  chips:[['F','on','on'],['Z','on','on'],['S','on','undone']], tip:[2,1] },
+  A40:{ before:['F','Z'], after:['F','Z','S'],  chips:[['F','on','on'],['Z','on','on'],['S','undone','on']], tip:[1,2] },
+  A41:{ before:['F','Z','S'], after:[],         chips:[['F','on','undone'],['Z','on','undone'],['S','on','undone']], tip:[2,-1] },
+  A42:{ before:['F','Z','S'], after:['F','S'],  chips:[['F','on','on'],['Z','on','gone'],['S','on','on']], tip:[2,2] },
+  A43:{ before:['F','Z','S'], after:['F30','Z','S'], chips:[['F','on','edit'],['Z','on','on'],['S','on','on']], tip:[2,2] },
+  A44:{ before:['F','Z','S'], after:['F'],      chips:[['F','on','on'],['Z','on','later'],['S','on','later']], tip:[2,0] },
+  A07:{ before:['F','Z','S'], after:['F'],      chips:[['F','on','on'],['Z','on','on'],['S','on','on'],['R','new','new']], tip:[2,3], bookmark:true }
+};
+
+/* ---------- effect of each output on the chart ---------- */
+function effect(m, a, P, et, fade){
+  const t = ease(clamp(et)), story = STORIES[a];
+  if (story){
+    const A = stateOf(story.before.map(k => STEP[k])), B = stateOf(story.after.map(k => STEP[k])), s = mix(A, B, t);
+    return { pts: s.pts, view: s.view, extra:'', bars:0, second:false, marks: story.bookmark ? 1 : 0, bookmarkFixed: !!story.bookmark,
+             notes:[], grid:false, tint:0, hist:{ story, t }, record:null };
+  }
+  const pts = PTS.map((p, k) => ({ x:p.x, y:p.y, c:p.c, r:6, op:1, ring:0, k }));
+  const out = { pts, extra:'', view:{ s:1, tx:0, ty:0, rot:0 }, bars:0, second:false, hist:null, marks:0, notes:[], grid:false, tint:0, record:{ lab: byA[a].name, t } };
+  const f = pts[FOCUS], sc = P.scope, inS = k => !sc || sc.includes(k), tv = t * (fade ?? 1);
+  const center = () => { const ks = sc || [...PTS.keys()]; return { x: ks.reduce((s, k) => s + PTS[k].x, 0) / ks.length, y: ks.reduce((s, k) => s + PTS[k].y, 0) / ks.length }; };
+  switch (m){
+    case 'M01':
+      if (P.variant === 'pick' || byI[SIM.i].name === 'place object') pts.push({ x:.66, y:.5, c:1, r:6*t, op:t, ring:0, k:pts.length });
+      else [[.16,.9],[.58,.14],[.70,.93]].forEach(([x,y]) => pts.push({ x, y, c:1, r:6*t, op:t, ring:0, k:pts.length }));
+      break;
+    case 'M02':
+      if (sc && sc.length > 1) { sc.forEach(k => { pts[k].y = lerp(PTS[k].y, Math.min(.95, PTS[k].y + .12), t); pts[k].ring = t < 1 ? 1 : 0; }); const c = center(); out.extra = lbl(X(c.x) + 14, Y(c.y + .12) - 34, `+12 on ${sc.length} items`, t); break; }
+      f.y = lerp(.56, .86, t); f.ring = t < 1 ? 1 : 0; out.extra = lbl(X(f.x)+10, Y(f.y)-10, TXT.A05, t); break;
+    case 'M03': { const ks = sc && sc.length > 1 ? sc : [...PTS.keys()], my = ks.reduce((s, k) => s + PTS[k].y, 0) / ks.length;
+      const x0 = sc && sc.length > 1 ? Math.min(...ks.map(k => PTS[k].x)) - .04 : 0, x1 = sc && sc.length > 1 ? Math.max(...ks.map(k => PTS[k].x)) + .04 : 1;
+      out.extra = `<line x1="${X(x0)}" y1="${Y(my)}" x2="${X(lerp(x0, x1, t))}" y2="${Y(my)}" style="stroke:var(--out);stroke-width:2;stroke-dasharray:5 4"/>` + lbl(X(lerp(x0, x1, t))-40, Y(my)-8, S_.mean, t);
+      if (a === 'A21') groupAgg(pts, t, out, sc); break; }
+    case 'M04':
+      if (a === 'A31') { [[.47,.66],[.60,.46],[.44,.48]].forEach(([x,y]) => pts.push({ x:lerp(f.x,x,t), y:lerp(f.y,y,t), c:2, r:5, op:tv, ring:0, k:pts.length })); break; }
+      if (a === 'A03' && sc) {                       /* data subset: the chosen items go into an output box; the view keeps only them */
+        out.tray = { ks: sc, t, lab: 'output · data subset' };
+        pts.forEach((p, k) => { if (!sc.includes(k)) p.op = lerp(1, .07, clamp((t - .55) / .45)); else p.ring = clamp(t * 3) * (1 - clamp((t - .8) / .2)); });
+        break;
+      }
+      if (P.variant === 'category' || a === 'A03') { pts.forEach(p => { if (p.c === 1) p.op = lerp(1, .07, t); }); break; }
+      if (P.variant === 'sketch') { pts.forEach(p => { const cy = IY(drawCurveY(p.x)); if (Math.abs(p.y - cy) > .18) p.op = lerp(1, .07, t); }); break; }
+      if (sc) { pts.forEach((p, k) => { if (!sc.includes(k)) p.op = lerp(1, .07, t); }); break; }
+      { const thr = P.live ? lerp(0, .45, t) : .45; pts.forEach(p => { if (p.y < thr) p.op = P.live ? .07 : lerp(1, .07, t); }); }
+      break;
+    case 'M05':
+      if (a === 'A13') { const cut = P.live ? lerp(0, .5, t) : .5; pts.forEach(p => { if (p.x < cut) p.op = P.live ? .07 : lerp(1, .07, t); }); break; }
+      if (a === 'A12' && sc) { pts.forEach((p, k) => { if (!sc.includes(k)) p.op = lerp(1, .07, t); }); break; }
+      pts.forEach(p => { p.y = lerp(p.y, .5, t); });
+      if (a === 'A12') pts.forEach(p => { if (p.c !== 2) p.op = lerp(1, .07, t); });
+      break;
+    case 'M06': {
+      if (sc && sc.length > 1) { const xs = sc.map(k => X(PTS[k].x)), ys = sc.map(k => Y(PTS[k].y)); out.view.fx = (Math.min(...xs) + Math.max(...xs)) / 2; out.view.fy = (Math.min(...ys) + Math.max(...ys)) / 2; out.view.s = lerp(1, Math.min(1.8, PW / (Math.max(...xs) - Math.min(...xs) + 90)), t); }
+      else { const c = P.surface === 'rep' || P.target.kind === 'point' || P.target.kind === 'rect' || P.target.kind === 'plot' ? FP() : { x:X(.5), y:Y(.5) }; out.view.fx = c.x; out.view.fy = c.y; out.view.s = lerp(1, 1.9, t); }
+      if (P.variant === 'rubber') { const r = rubberRect(); out.view.fx = r.cx; out.view.fy = r.cy; out.view.s = lerp(1, 2, t); }
+      if (a === 'A15') out.second = true; break; }
+    case 'M07': {
+      const tg = P.target;
+      if (P.variant === 'direct' && P.target.kind === 'drop') { out.view.tx = (tg.x2 - tg.x) * t; out.view.ty = (tg.y2 - tg.y) * t; }
+      else if (P.variant === 'scrollbar') out.view.tx = -(tg.x2 - tg.x) * t;
+      else if (sc && sc.length > 1) { const c = center(); out.view.tx = (X(.5) - X(c.x)) * t; out.view.ty = (Y(.5) - Y(c.y)) * t; }
+      else if (P.variant === 'pick') { const c = FP(); out.view.tx = (X(.5) - c.x) * t; out.view.ty = (Y(.5) - c.y) * t; }
+      else if (P.variant === 'key') out.view.tx = -45 * t;
+      else out.view.tx = lerp(0, -90, t);
+      if (a === 'A15') out.second = true; break; }
+    case 'M08': out.view.rot = lerp(0, 28, t); break;
+    case 'M09': groupAgg(pts, t, out, sc); break;
+    case 'M10': { const c = P.target.kind === 'plot' || P.target.kind === 'point' ? FP() : { x:X(.5), y:Y(.5) }; out.view.s = lerp(1, 1.6, t); out.view.fx = c.x; out.view.fy = c.y; pts.forEach((p, k) => { if (!sc || sc.length < 2 || sc.includes(k)) p.glyph = t; }); if (sc && sc.length > 1) { out.view.fx = LASSO.cx; out.view.fy = LASSO.cy; } break; }
+    case 'M11': {
+      if (P.variant === 'manualsort') {                              /* one item dragged by hand to the front, the rest follow */
+        const d = pts[10]; d.x = lerp(PTS[10].x, .05, clamp(t * 1.6));
+        const order = [...PTS.keys()].sort((i, j) => PTS[i].y - PTS[j].y);
+        order.forEach((k, rank) => { if (k !== 10) pts[k].x = lerp(PTS[k].x, .05 + rank * .082, clamp((t - .5) * 2)); });
+        break;
+      }
+      const ks = sc || [...PTS.keys()];
+      const slots = ks.map(k => PTS[k].x).sort((u, v) => u - v);
+      const byY = [...ks].sort((i, j) => PTS[i].y - PTS[j].y);
+      byY.forEach((k, rank) => { pts[k].x = lerp(PTS[k].x, sc ? slots[rank] : .05 + rank * .082, t); });
+      if (sc) sc.forEach(k => { pts[k].ring = t; });
+      break; }
+    case 'M12':
+      if (a === 'A22') pts.forEach((p, k) => { if (inS(k)) { p.x += Math.sin(k*7.3) * .035 * t; p.y += Math.cos(k*3.1) * .035 * t; } });
+      else if (a === 'A18') pts.forEach(p => { p.y = lerp(p.y, p.y - PTS[FOCUS].y + .5, t); });
+      else { const ks = sc || [FOCUS]; ks.forEach(k => { pts[k].x = lerp(PTS[k].x, PTS[k].x + (.80 - PTS[FOCUS].x), t); pts[k].y = lerp(PTS[k].y, PTS[k].y + (.88 - PTS[FOCUS].y), t); }); }
+      break;
+    case 'M13': if (sc && sc.length > 1 && P.variant === 'region') sc.forEach(k => { pts[k].bar = t; }); else out.bars = t; break;
+    case 'M14': pts.forEach((p, k) => { if (inS(k)) { p.r = lerp(6, 3 + 11 * p.y, t); p.seq = t; } }); break;
+    case 'M15': out.grid = !sc && t > .5; out.tint = sc ? 0 : t; pts.forEach((p, k) => { if (inS(k)) p.styled = t; }); break;
+    case 'M16': (sc || [FOCUS]).forEach(k => { pts[k].ring = tv; }); break;
+    case 'M17': { const s = sc || [FOCUS];
+      pts.forEach((p, k) => { const on = s.includes(k); p.op = on ? 1 : lerp(1, .22, tv); if (on) p.r = lerp(6, 8, tv); });
+      if (a === 'A30') out.second = true; break; }
+    case 'M18': if (sc && sc.length > 1) { const c = center(); out.extra = tooltip(X(c.x), Y(c.y), tv, `${sc.length} items`, `mean ${S_.price}: ${Math.round(40 + 40 * c.y)}`); sc.forEach(k => { pts[k].ring = tv; }); }
+                else { out.extra = tooltip(X(f.x), Y(f.y), tv); f.r = lerp(6, 8, tv); } break;
+    case 'M19': if (sc && sc.length > 1) { const c = center(); out.extra = `<ellipse cx="${LASSO.cx}" cy="${LASSO.cy}" rx="${LASSO.rx}" ry="${LASSO.ry}" style="fill:none;stroke:var(--out);stroke-dasharray:4 3;opacity:${t}"/>` + sticky(X(c.x), Y(c.y) + 20, TXT.A33, t); }
+                else out.extra = sticky(X(f.x), Y(f.y), TXT.A33, t);
+                break;
+    case 'M20': out.notes = [P.variant === 'handwrite' ? '✎ (handwritten)' : txtFor(a)]; out.notesT = t; break;
+    case 'M21': out.marks = t; break;
+  }
+  return out;
+}
+function drawCurveY(x){ const u = (X(x) - PX - 30) / 280; return PY + 130 - 60*Math.sin(u*Math.PI*1.6) - 20*u; }
+function rubberRect(){ return { ...RECT, cx: RECT.x + RECT.w / 2, cy: RECT.y + RECT.h / 2 }; }
+function groupAgg(pts, t, out, sc){
+  if (sc && sc.length > 1){
+    const cx = sc.reduce((s, k) => s + PTS[k].x, 0) / sc.length, cy = sc.reduce((s, k) => s + PTS[k].y, 0) / sc.length;
+    sc.forEach(k => { pts[k].x = lerp(PTS[k].x, cx, t); pts[k].y = lerp(PTS[k].y, cy, t); pts[k].op = lerp(1, .3, t); });
+    const one = sc.every(k => PTS[k].c === PTS[sc[0]].c), fill = one ? `var(--p${PTS[sc[0]].c})` : 'var(--out)';
+    out.extra += `<circle cx="${X(cx)}" cy="${Y(cy)}" r="${20*t}" style="fill:${fill};opacity:${.85*t}"/><text x="${X(cx)}" y="${Y(cy)+4}" text-anchor="middle" style="font:600 12px 'IBM Plex Mono',monospace;fill:#fff;opacity:${t}">${sc.length}</text>`;
+    return;
+  }
+  const cx = [.2, .5, .8], cy = [.5, .5, .5];
+  pts.forEach(p => { p.x = lerp(p.x, cx[p.c], t); p.y = lerp(p.y, cy[p.c], t); p.op = lerp(1, .35, t); });
+  out.extra += [0,1,2].map(c => `<circle cx="${X(cx[c])}" cy="${Y(cy[c])}" r="${22*t}" style="fill:var(--p${c});opacity:${.85*t}"/>` +
+    `<text x="${X(cx[c])}" y="${Y(cy[c])+4}" text-anchor="middle" style="font:600 12px 'IBM Plex Mono',monospace;fill:#fff;opacity:${t}">4</text>`).join('');
+}
+function lbl(x, y, s, t){ return `<text x="${x}" y="${y}" style="font:500 11px 'IBM Plex Mono',monospace;fill:var(--out-ink);opacity:${t}">${esc(s)}</text>`; }
+function tooltip(x, y, t, l1, l2){
+  const w = 124, h = 42, bx = x + 14, by = y - h - 10;
+  return `<g style="opacity:${t}"><rect x="${bx}" y="${by}" width="${w}" height="${h}" rx="4" style="fill:var(--surface);stroke:var(--out);stroke-width:1.5"/>
+    <text x="${bx+10}" y="${by+17}" style="font:600 11px 'IBM Plex Sans',sans-serif;fill:var(--ink)">${esc(l1 || S_.item + ' 6 · C')}</text>
+    <text x="${bx+10}" y="${by+32}" style="font:11px 'IBM Plex Mono',monospace;fill:var(--ink-2)">${esc(l2 || S_.price + ': 56')}</text></g>`;
+}
+function sticky(x, y, s, t){
+  const bx = x - 160, by = y + 24, n = Math.round(s.length * clamp((t - .3) / .7));
+  return `<g style="opacity:${Math.min(1, t*2)}"><line x1="${x-6}" y1="${y+6}" x2="${bx+128}" y2="${by+6}" style="stroke:var(--out);stroke-width:1.5"/>
+    <rect x="${bx}" y="${by}" width="128" height="40" rx="3" style="fill:var(--out-soft);stroke:var(--out)"/>
+    <text x="${bx+9}" y="${by+24}" style="font:12px 'IBM Plex Sans',sans-serif;fill:var(--ink)">${esc(s.slice(0, n))}</text></g>`;
+}
+
+/* ---------- static parts of the scene ---------- */
+function plotSVG(o){
+  const v = o.view, cx = PX + PW/2, cy = PY + PH/2;
+  const tr = `translate(${v.tx||0} ${v.ty||0}) ` + (v.s !== 1 ? `translate(${v.fx} ${v.fy}) scale(${v.s}) translate(${-v.fx} ${-v.fy}) ` : '') + (v.rot ? `rotate(${v.rot} ${cx} ${cy})` : '');
+  const col = p => p.seq ? `color-mix(in srgb, var(--p${p.c}) ${Math.round(100 - 60*p.seq*(1-p.y))}%, var(--surface))` : `var(--p${p.c})`;
+  const grid = o.grid ? [.25,.5,.75].map(g => `<line x1="${PX}" y1="${Y(g)}" x2="${PX+PW}" y2="${Y(g)}" style="stroke:var(--rule);stroke-dasharray:2 3"/>`).join('') : '';
+  const dots = o.pts.map(p => {
+    const x = X(p.x), y = Y(p.y);
+    let s = '';
+    const bb = Math.max(o.bars, p.bar || 0);
+    if (bb > 0){ const hb = (PY + PH - y) * bb; s += `<rect x="${x-9}" y="${PY+PH-hb}" width="18" height="${hb}" rx="2" style="fill:var(--p${p.c});opacity:${p.op*bb}"/>`; }
+    const r = p.r * (1 - bb);
+    if (p.glyph > .5) s += `<g style="opacity:${p.op}"><rect x="${x-16}" y="${y-8}" width="32" height="16" rx="3" style="fill:var(--p${p.c})"/><text x="${x}" y="${y+4}" text-anchor="middle" style="font:600 9px 'IBM Plex Mono',monospace;fill:#fff">${'ABC'[p.c]}${p.k+1}</text></g>`;
+    else if (r > .2) s += `<circle cx="${x}" cy="${y}" r="${r}" style="fill:${col(p)};opacity:${p.op};${p.styled ? `stroke:var(--ink);stroke-width:${2*p.styled}` : ''}"/>`;
+    if (p.ring) s += `<circle cx="${x}" cy="${y}" r="${r+5}" style="fill:none;stroke:var(--out);stroke-width:2;stroke-dasharray:3 2;opacity:${p.ring}"/>`;
+    return s;
+  }).join('');
+  return `<defs><clipPath id="clip"><rect x="${PX}" y="${PY}" width="${PW}" height="${PH}"/></clipPath></defs>
+    <rect x="${PX}" y="${PY}" width="${PW}" height="${PH}" rx="4" style="fill:color-mix(in srgb, var(--out-soft) ${Math.round(o.tint*100)}%, var(--surface));stroke:var(--rule)"/>
+    <g clip-path="url(#clip)"><g transform="${tr}">${grid}${dots}${o.extra}</g></g>
+    <text x="${PX}" y="${PY-10}" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-3)">${S_.price} ↑</text>`;
+}
+function panelSVG(o, P, gt, time){
+  let s = '';
+  if (o.second){
+    const k = .42, ox = 410, oy = 40;
+    const dots = o.pts.map(p => `<circle cx="${ox + (X(p.x)-PX)*k + (o.view.tx||0)*k}" cy="${oy + (Y(p.y)-PY)*k + (o.view.ty||0)*k}" r="${Math.max(2, p.r*.55)}" style="fill:var(--p${p.c});opacity:${p.op}"/>`).join('');
+    s += `<clipPath id="clip2"><rect x="${ox}" y="${oy}" width="${PW*k}" height="${PH*k}"/></clipPath><rect x="${ox}" y="${oy}" width="${PW*k}" height="${PH*k}" rx="3" style="fill:var(--surface);stroke:var(--rule)"/><g clip-path="url(#clip2)">${dots}</g>
+      <text x="${ox}" y="${oy-8}" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-3)">view 2 (linked)</text>`;
+  }
+  s += widgetSVG(P, gt, time);
+  if (o.tray) s += traySVG(o.tray);
+  if (o.notes.length){
+    const n = o.notes[0], k = Math.round(n.length * clamp(o.notesT * 1.4));
+    s += `<g style="opacity:${clamp(o.notesT * 3)}"><rect x="425" y="240" width="140" height="34" rx="3" style="fill:var(--out-soft);stroke:var(--out)"/>
+      <text x="433" y="253" style="font:9px 'IBM Plex Mono',monospace;fill:var(--ink-3)">${S_.notes}</text>
+      <text x="433" y="267" style="font:11px 'IBM Plex Sans',sans-serif;fill:var(--ink)">${esc(n.slice(0, k))}</text></g>`;
+  }
+  return s;
+}
+/* output box: copies of the chosen data items fly from the chart into it, one after the other */
+function traySVG(tr){
+  const { ks, t, lab } = tr, bx = 425, by = 66, bw = 140, bh = 62;
+  let s = `<g style="opacity:${clamp(t * 4)}"><text x="${bx}" y="${by - 8}" style="font:9px 'IBM Plex Mono',monospace;fill:var(--out-ink)">${esc(lab)}</text>
+    <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="5" style="fill:var(--out-soft);stroke:var(--out);stroke-width:1.5"/></g>`;
+  ks.forEach((k, j) => {
+    const tj = ease(clamp((t - .08 - j * .1) / .45));
+    if (tj <= 0) return;
+    const sx = bx + 18 + (j % 6) * 21, sy = by + 20 + Math.floor(j / 6) * 18;
+    const x = lerp(X(PTS[k].x), sx, tj), y = lerp(Y(PTS[k].y), sy, tj) - 46 * Math.sin(Math.PI * tj);
+    s += `<circle cx="${x}" cy="${y}" r="${lerp(6, 5.5, tj)}" style="fill:var(--p${PTS[k].c});stroke:var(--surface);stroke-width:1"/>`;
+  });
+  const done = clamp((t - .08 - (ks.length - 1) * .1 - .45) / .15);
+  if (done > 0) s += `<text x="${bx + 10}" y="${by + bh - 10}" style="font:11px 'IBM Plex Sans',sans-serif;fill:var(--ink);opacity:${done}">${ks.length} item${ks.length > 1 ? 's' : ''}</text>`;
+  return s;
+}
+/* the widget the interaction needs: it fades in before the cursor reaches it and fades out after the output */
+function widgetSVG(P, gt, time){
+  const tk = P.target.kind, v = P.variant;
+  const need = tk === 'slider' || tk === 'checkbox' || tk === 'button' || tk === 'scrollbar' || (tk === 'field' && v === 'text') || v === 'shelf';
+  if (!need) return '';
+  const te1 = DUR.g + DUR.a + DUR.e, up = ease(clamp(gt / .3)), op = up * clamp(1 - (time - te1 - .2) / .6), dy = (1 - up) * 8;
+  const act = gt > .35, hl = act ? 'stroke:var(--int);stroke-width:2' : 'stroke:var(--rule)';
+  let s = '';
+  if (tk === 'slider'){
+    const w = W.slider, kt = ease(clamp((gt - .45) / .45)), knob = lerp(w.x, w.x2, kt);
+    const lab = PARAM[SIM.a] || 'value';
+    const valTxt = SIM.a === 'A02' ? `> ${Math.round(lerp(20, 50, kt))}` : `${(Math.round(lerp(1, 3, kt) * 10) / 10).toFixed(1)}×`;
+    s = `<text x="425" y="${w.y-22}" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-3)">${esc(lab)}</text>
+      <text x="565" y="${w.y-22}" text-anchor="end" style="font:10px 'IBM Plex Mono',monospace;fill:${kt ? 'var(--int-ink)' : 'var(--ink-3)'}">${valTxt}</text>
+      <line x1="425" y1="${w.y}" x2="565" y2="${w.y}" style="stroke:var(--rule);stroke-width:4;stroke-linecap:round"/>
+      <line x1="${knob}" y1="${w.y}" x2="565" y2="${w.y}" style="stroke:var(--p2);stroke-width:4;stroke-linecap:round"/>
+      <circle cx="${knob}" cy="${w.y}" r="8" style="fill:var(--surface);${hl}"/>`;
+  }
+  if (tk === 'checkbox'){
+    const w = W.checkbox, checked = !(gt > .62);
+    s = `<rect x="${w.x-8}" y="${w.y-8}" width="16" height="16" rx="3" style="fill:${checked ? 'var(--int)' : 'var(--surface)'};${hl}"/>
+      ${checked ? `<path d="M${w.x-4} ${w.y}l3 3 6-6" style="fill:none;stroke:#fff;stroke-width:2"/>` : ''}
+      <text x="${w.x+16}" y="${w.y+5}" style="font:12px 'IBM Plex Sans',sans-serif;fill:var(--ink-2)">show category B</text>`;
+  }
+  if (tk === 'button'){
+    const w = W.button, btn = P.button.length > 13 ? P.button.slice(0, 12) + '…' : P.button, down = gt > .5 && gt < .7;
+    s = `<rect x="${w.x-55}" y="${w.y-14 + (down ? 1 : 0)}" width="110" height="28" rx="4" style="fill:${down ? 'var(--int-soft)' : 'var(--surface-2)'};${hl}"/>
+      <text x="${w.x}" y="${w.y+5 + (down ? 1 : 0)}" text-anchor="middle" style="font:500 12px 'IBM Plex Sans',sans-serif;fill:var(--ink)">${esc(btn)}</text>`;
+  }
+  if (tk === 'field' && v === 'text'){
+    const w = W.field, full = txtFor(SIM.a), txt = gt > .4 ? full.slice(0, Math.round(full.length * clamp((gt - .4) / .5))) : '';
+    s = `<rect x="${w.x-70}" y="${w.y-14}" width="140" height="28" rx="4" style="fill:var(--surface);${hl}"/>
+      <text x="${w.x-62}" y="${w.y+5}" style="font:12px 'IBM Plex Mono',monospace;fill:${txt ? 'var(--ink)' : 'var(--ink-3)'}">${esc(txt || S_.search)}${txt && gt < .95 ? '|' : ''}</text>`;
+  }
+  if (v === 'shelf'){
+    const w = W.field, a = W.attr, dropped = gt > .9, moving = gt > .35 && !dropped;
+    s = `<text x="425" y="${a.y-18}" style="font:9px 'IBM Plex Mono',monospace;fill:var(--ink-3)">attributes</text>
+      <g style="opacity:${moving || dropped ? .35 : 1}"><rect x="${a.x-26}" y="${a.y-10}" width="52" height="20" rx="10" style="fill:var(--surface-2);stroke:var(--rule)"/>
+      <text x="${a.x}" y="${a.y+4}" text-anchor="middle" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-2)">price</text></g>
+      <rect x="${w.x-70}" y="${w.y-14}" width="140" height="28" rx="4" style="fill:var(--surface);stroke-dasharray:4 3;${dropped ? 'stroke:var(--int);stroke-width:2' : 'stroke:var(--rule)'}"/>
+      <text x="${w.x-62}" y="${w.y+5}" style="font:12px 'IBM Plex Mono',monospace;fill:${dropped ? 'var(--ink)' : 'var(--ink-3)'}">${dropped ? 'x: price' : 'x: drop here'}</text>`;
+  }
+  if (tk === 'scrollbar'){
+    const w = W.scrollbar, kt = ease(clamp((gt - .45) / .45)), cx = lerp(w.x, w.x2, kt);
+    s = `<rect x="${PX}" y="${w.y-5}" width="${PW}" height="10" rx="5" style="fill:var(--surface-2);stroke:var(--rule)"/>
+      <rect x="${cx-40}" y="${w.y-5}" width="80" height="10" rx="5" style="fill:${act ? 'var(--int)' : 'var(--ink-3)'};opacity:.7"/>`;
+  }
+  return `<g style="opacity:${op}" transform="translate(0 ${dy})">${s}</g>`;
+}
+function chip(x, lab, style, op, extra){
+  return `<g style="opacity:${op}"><rect x="${x}" y="306" width="84" height="20" rx="10" style="fill:var(--surface-2);${style}"/>
+    <text x="${x+42}" y="320" text-anchor="middle" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-2)">${esc(lab)}</text>${extra || ''}</g>`;
+}
+function stripSVG(o){
+  let s = `<text x="40" y="300" style="font:9px 'IBM Plex Mono',monospace;fill:var(--ink-3)">${S_.hist}</text>`;
+  if (o.hist){
+    const { story, t } = o.hist, Wd = 90;
+    let xoff = 0;
+    story.chips.forEach(([key, b, a], k) => {
+      const lab = key === 'R' ? 'restore ★' : (a === 'edit' && t > .5 ? STEP.F30.lab : STEP[key].lab);
+      const stt = t < .5 ? b : a, x = 40 + k * Wd - xoff;
+      let style = 'stroke:var(--rule)', op = 1, extra = '';
+      if (a === 'gone'){ op = 1 - t; style = 'stroke:var(--out);stroke-width:1.5'; xoff = Wd * t; }
+      if (stt === 'undone'){ style = 'stroke:var(--rule);stroke-dasharray:3 3'; op = .5; extra = `<line x1="${x+14}" y1="316" x2="${x+70}" y2="316" style="stroke:var(--ink-3)"/>`; }
+      if (stt === 'later') op = .45;
+      if (a === 'edit' && t > .2) style = 'stroke:var(--out);stroke-width:2';
+      if (key === 'R'){ op = t; style = 'stroke:var(--out);stroke-width:2'; }
+      if (b !== a && a !== 'gone' && t > .3) style += ';stroke:var(--out)';
+      s += chip(x, lab, style, op, extra);
+    });
+    const tipIdx = t < .5 ? story.tip[0] : story.tip[1];
+    const idxX = i => 40 + i * Wd - (story.chips[1] && story.chips[1][2] === 'gone' && i > 1 ? Wd * t : 0);
+    const tx = tipIdx < 0 ? 22 : idxX(tipIdx) + 42;
+    s += `<path d="M${tx-5} 338l5-6 5 6z" style="fill:var(--out)"/><text x="${tx+9}" y="339" style="font:9px 'IBM Plex Mono',monospace;fill:var(--out-ink)">${S_.now}</text>`;
+  } else if (o.record){
+    const r = o.record;
+    if (r.t > .55) s += chip(40, r.lab.length > 12 ? r.lab.slice(0, 11) + '…' : r.lab, 'stroke:var(--out);stroke-width:1.5', clamp((r.t - .55) / .3));
+    else s += `<text x="40" y="320" style="font:10px 'IBM Plex Sans',sans-serif;fill:var(--ink-3)">${S_.empty}</text>`;
+  }
+  s += `<text x="410" y="300" style="font:9px 'IBM Plex Mono',monospace;fill:var(--ink-3)">${S_.marks}</text>`;
+  if (o.bookmarkFixed){
+    const glow = o.hist && o.hist.t > .1 && o.hist.t < .8;
+    s += `<rect x="410" y="306" width="96" height="24" rx="3" style="fill:var(--out-soft);stroke:${glow ? 'var(--out)' : 'var(--rule)'};stroke-width:${glow ? 2 : 1}"/>
+      <text x="458" y="322" text-anchor="middle" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-2)">★ filter only</text>`;
+  } else if (o.marks > 0){
+    if (o.marks > .6) s += `<rect x="410" y="306" width="96" height="24" rx="3" style="fill:var(--out-soft);stroke:var(--out);opacity:${(o.marks-.6)/.4}"/>
+      <text x="458" y="322" text-anchor="middle" style="font:10px 'IBM Plex Mono',monospace;fill:var(--ink-2);opacity:${(o.marks-.6)/.4}">★ view 1</text>`;
+    if (o.marks < .7){ const t = o.marks / .7, x = lerp(PX + PW/2, 458, t), y = lerp(PY + PH/2, 318, t), w = lerp(120, 60, t);
+      s += `<rect x="${x - w/2}" y="${y - w*.35}" width="${w}" height="${w*.7}" rx="3" style="fill:var(--out-soft);stroke:var(--out);opacity:${1-t*.3}"/>`; }
+  } else s += `<text x="410" y="320" style="font:10px 'IBM Plex Sans',sans-serif;fill:var(--ink-3)">—</text>`;
+  return s;
+}
+
+/* ---------- interactions (gt: 0..1) ---------- */
+const CUR = (x, y, down) => `<g transform="translate(${x} ${y})"><path d="M0 0v17l4.5-4 3 7 2.6-1.1-3-6.9H13z" style="fill:${down ? 'var(--int)' : 'var(--surface)'};stroke:var(--int-ink);stroke-width:1.4;stroke-linejoin:round"/></g>`;
+const RIP = (x, y, t) => t > 0 && t < 1 ? `<circle cx="${x}" cy="${y}" r="${4 + 16*t}" style="fill:none;stroke:var(--int);stroke-width:2;opacity:${1-t}"/>` : '';
+const FING = (x, y, a) => `<circle cx="${x}" cy="${y}" r="11" style="fill:var(--int);opacity:${a ?? .35}"/><circle cx="${x}" cy="${y}" r="11" style="fill:none;stroke:var(--int-ink);stroke-width:1.2"/>`;
+function approachPath(tg, gt, p = .45){ const t = ease(clamp(gt / p)); return { x: lerp(585, tg.x, t), y: lerp(330, tg.y, t) }; }
+function drawCurve(u){ return [PX + 30 + u * 280, PY + 130 - 60*Math.sin(u*Math.PI*1.6) - 20*u]; }
+function interaction(iname, gt, P){
+  const ph = (a, b) => clamp((gt - a) / (b - a)), tg = P.target;
+  let s = '';
+  if (tg.kind === 'none' && !['key','voice','body / head','approach','gaze'].includes(iname)) return '';
+  switch (iname){
+    case 'click': case 'double-click': case 'right-click': case 'hover': case 'touch': case 'place object': case 'point': case 'gaze':
+      if (iname === 'hover'){ const p = approachPath(tg, gt, .5), dt = ph(.5, .9), c = 2*Math.PI*16;
+        if (gt > .5) s += `<circle cx="${tg.x}" cy="${tg.y}" r="16" style="fill:none;stroke:var(--int);stroke-width:2.5;stroke-dasharray:${c*dt} ${c}" transform="rotate(-90 ${tg.x} ${tg.y})"/>`;
+        return s + CUR(p.x, p.y, false); }
+      if (iname === 'touch'){ const p = approachPath(tg, gt, .5); return s + RIP(tg.x, tg.y, ph(.55, .8)) + FING(p.x, p.y, gt > .55 && gt < .65 ? .7 : .35); }
+      if (iname === 'point'){ const hx = 560, hy = 40, t = ease(ph(.1, .6));
+        s += `<g style="opacity:${ph(0,.2)}">${FING(hx, hy, .35)}</g>`;
+        if (t > 0) s += `<line x1="${hx}" y1="${hy}" x2="${lerp(hx, tg.x, t)}" y2="${lerp(hy, tg.y, t)}" style="stroke:var(--int);stroke-width:2;stroke-dasharray:4 4"/>`;
+        if (gt > .6) s += `<circle cx="${tg.x}" cy="${tg.y}" r="14" style="fill:none;stroke:var(--int);stroke-width:2;stroke-dasharray:3 3"/>`;
+        return s; }
+      if (iname === 'place object'){ const t = ease(ph(.1, .7)), x = lerp(590, tg.x + 10, t), y = lerp(20, tg.y - 12, t);
+        s += `<rect x="${x-13}" y="${y-9}" width="26" height="26" rx="6" style="fill:var(--ink);opacity:.12"/><rect x="${x-13}" y="${y-13}" width="26" height="26" rx="6" style="fill:var(--int);stroke:var(--int-ink);stroke-width:1.5"/>`;
+        return s + (gt > .7 ? RIP(tg.x + 10, tg.y - 12, ph(.7, .95)) : ''); }
+      if (iname === 'gaze'){ const ex = 575, ey = 22, t = ph(.1, .75), g = tg.kind === 'none' ? FP() : tg;
+        const gx = t < .6 ? lerp(PX + 60, PX + 260, Math.sin(t * 9) * .5 + .5) : g.x, gy = t < .6 ? lerp(PY + 60, PY + 170, Math.cos(t * 7) * .5 + .5) : g.y;
+        s += `<g style="opacity:${ph(0,.15)}"><path d="M${ex-14} ${ey}q14-11 28 0q-14 11-28 0z" style="fill:var(--surface);stroke:var(--int-ink);stroke-width:1.4"/><circle cx="${ex}" cy="${ey}" r="3.5" style="fill:var(--int)"/></g><circle cx="${gx}" cy="${gy}" r="7" style="fill:var(--int);opacity:.5"/>`;
+        if (gt > .7){ const dt = ph(.7, .95), c = 2*Math.PI*15; s += `<circle cx="${g.x}" cy="${g.y}" r="15" style="fill:none;stroke:var(--int);stroke-width:2.5;stroke-dasharray:${c*dt} ${c}" transform="rotate(-90 ${g.x} ${g.y})"/>`; }
+        return s; }
+      { const p = approachPath(tg, gt);
+        s += RIP(tg.x, tg.y, ph(.5, .72));
+        if (iname === 'double-click') s += RIP(tg.x, tg.y, ph(.66, .88));
+        if (iname === 'right-click' && gt > .7){
+          const ct = ph(.7, .85), mx = Math.min(tg.x + 8, 480), my = Math.min(tg.y + 6, 250), items = [shortName(SIM.a), 'Copy', 'Hide'];
+          s += `<g style="opacity:${ct}"><rect x="${mx}" y="${my}" width="104" height="66" rx="4" style="fill:var(--surface);stroke:var(--rule)"/>` +
+            items.map((c, k) => `<rect x="${mx+3}" y="${my+3+k*20}" width="98" height="19" rx="3" style="fill:${k===0 && gt>.85 ? 'var(--int-soft)' : 'transparent'}"/><text x="${mx+10}" y="${my+17+k*20}" style="font:11px 'IBM Plex Sans',sans-serif;fill:var(--ink)">${esc(c.length > 14 ? c.slice(0, 13) + '…' : c)}</text>`).join('') + `</g>`;
+        }
+        return s + CUR(p.x, p.y, gt > .5 && gt < .6 || (iname === 'double-click' && gt > .66 && gt < .74)); }
+    case 'drag': case 'brush / lasso': case 'draw': {
+      const p0 = approachPath(tg, gt, .35);
+      if (gt <= .35) return CUR(p0.x, p0.y, false);
+      const t = ease(ph(.38, .92)), N = 30, pts = [];
+      for (let k = 0; k <= N * t; k++){
+        const u = k / N;
+        if (tg.kind === 'region' || tg.kind === 'loop') pts.push([LASSO.cx + LASSO.rx*Math.cos(u*2*Math.PI + LASSO.a0), LASSO.cy + LASSO.ry*Math.sin(u*2*Math.PI + LASSO.a0)]);
+        else if (tg.kind === 'sketch') pts.push(drawCurve(u));
+        else if (tg.kind === 'line') pts.push([X(.5), lerp(PY + 10, PY + PH - 10, u)]);
+        else if (tg.kind === 'rect'){ const r = rubberRect(); pts.push([r.x + r.w * u, r.y + r.h * u]); }
+        else pts.push([lerp(tg.x, tg.x2 ?? tg.x + 50, u), lerp(tg.y, tg.y2 ?? tg.y, u)]);
+      }
+      const cur = pts[pts.length - 1] || [tg.x, tg.y];
+      if (tg.kind === 'rect'){ const r = rubberRect(); s += `<rect x="${r.x}" y="${r.y}" width="${(cur[0]-r.x)}" height="${(cur[1]-r.y)}" style="fill:var(--int-soft);fill-opacity:.22;stroke:var(--int);stroke-dasharray:4 3"/>`; }
+      else if (pts.length > 1) s += `<polyline points="${pts.map(q => q.join(',')).join(' ')}" style="fill:${(tg.kind==='region'||tg.kind==='loop') && t > .95 ? 'var(--int-soft)' : 'none'};fill-opacity:.22;stroke:var(--int);stroke-width:${iname==='draw'?3:2};${tg.kind==='drop'||tg.kind==='slider'||tg.kind==='scrollbar'?'stroke-dasharray:4 3;':''}opacity:.9"/>`;
+      if (P.variant === 'file') s += `<g transform="translate(${cur[0]-12} ${cur[1]-16})"><path d="M0 0h16l6 6v20H0z" style="fill:var(--surface);stroke:var(--int-ink);stroke-width:1.4"/><text x="3" y="20" style="font:7px 'IBM Plex Mono',monospace;fill:var(--int-ink)">csv</text></g>`;
+      if (P.variant === 'shelf') s += `<rect x="${cur[0]-26}" y="${cur[1]-10}" width="52" height="20" rx="10" style="fill:var(--int-soft);stroke:var(--int)"/><text x="${cur[0]}" y="${cur[1]+4}" text-anchor="middle" style="font:10px 'IBM Plex Mono',monospace;fill:var(--int-ink)">price</text>`;
+      return s + CUR(cur[0], cur[1], true); }
+    case 'key': {
+      const k = KEYS[SIM.a] || '↵', pressed = gt > .55 && gt < .72, w = 18 + k.length * 9;
+      const x = PX + PW/2 - w/2, y = 250 + (pressed ? 3 : 0);
+      return `<g style="opacity:${ph(.05,.25)}"><rect x="${x}" y="${y}" width="${w}" height="30" rx="5" style="fill:var(--surface);stroke:var(--int-ink);stroke-width:1.5"/>
+        <rect x="${x}" y="${y+26}" width="${w}" height="4" rx="2" style="fill:var(--int);opacity:${pressed ? 0 : .5}"/>
+        <text x="${x+w/2}" y="${y+20}" text-anchor="middle" style="font:600 13px 'IBM Plex Mono',monospace;fill:var(--int-ink)">${esc(k)}</text></g>`; }
+    case 'type': { const p = approachPath(tg, gt, .3); return CUR(p.x, p.y, gt > .3 && gt < .36); }
+    case 'pinch': {
+      const t = ease(ph(.3, .9)), d = lerp(10, 58, t);
+      s += `<g style="opacity:${ph(0, .25)}">${FING(tg.x - d, tg.y + d*.5, .4)}${FING(tg.x + d, tg.y - d*.5, .4)}</g>`;
+      if (t > 0) s += `<line x1="${tg.x-d}" y1="${tg.y+d*.5}" x2="${tg.x+d}" y2="${tg.y-d*.5}" style="stroke:var(--int);stroke-dasharray:3 3;opacity:.6"/>`;
+      return s; }
+    case 'scroll': {
+      const x = tg.x + 26, y = tg.y - 10, o = (gt * 6) % 1;
+      return `<g style="opacity:${ph(0,.2)}"><rect x="${x}" y="${y}" width="22" height="34" rx="11" style="fill:var(--surface);stroke:var(--int-ink);stroke-width:1.4"/>
+        <line x1="${x+11}" y1="${y+6}" x2="${x+11}" y2="${y+13}" style="stroke:var(--int);stroke-width:3;stroke-linecap:round"/>
+        <path d="M${x+11} ${y-6-8*o}l-4 5h8z" style="fill:var(--int);opacity:${gt>.3?1-o:0}"/></g>`; }
+    case 'voice': {
+      const txt = `“${txtFor(SIM.a)}”`, n = Math.round(txt.length * ph(.2, .8)), bx = PX + 60, by = 4;
+      return `<g style="opacity:${ph(0,.15)}"><rect x="${bx}" y="${by}" width="${Math.max(120, txt.length * 7.2 + 24)}" height="24" rx="12" style="fill:var(--int-soft);stroke:var(--int)"/>
+        <text x="${bx+12}" y="${by+16}" style="font:12px 'IBM Plex Sans',sans-serif;fill:var(--int-ink)">${esc(txt.slice(0, n))}</text></g>` +
+        [0,1,2,3,4].map(k => { const h = 4 + 7*Math.abs(Math.sin(gt*14 + k)); return `<rect x="${PX + 14 + k*6}" y="${by + 12 - h}" width="3" height="${2*h}" rx="1.5" style="fill:var(--int);opacity:${gt < .85 ? 1 : 0}"/>`; }).join(''); }
+    case 'body / head': case 'approach': {
+      const t = ease(ph(.1, .8)), sc = iname === 'approach' ? lerp(.55, 1.25, t) : 1, lean = iname === 'body / head' ? Math.sin(t * Math.PI) * 18 : 0;
+      return `<g transform="translate(540 250) scale(${sc}) rotate(${lean})" style="opacity:${ph(0,.15)}">
+        <circle cx="0" cy="-58" r="10" style="fill:var(--int-soft);stroke:var(--int-ink);stroke-width:1.5"/>
+        <path d="M0 -48v34M-16 -34h32M0 -14l-11 22M0 -14l11 22" style="fill:none;stroke:var(--int-ink);stroke-width:2;stroke-linecap:round"/></g>`; }
+  }
+  return s;
+}
+
+/* ---------- one frame ---------- */
+function frame(time){
+  const P = plan(SIM.a, SIM.i);
+  const tg0 = DUR.g, ta0 = tg0 + DUR.a, te1 = ta0 + DUR.e;
+  const gt = clamp(time / tg0);
+  /* continuous interactions drive the output during the interaction; discrete ones trigger it afterwards */
+  const liveStart = .38 * tg0;
+  const at = P.live ? clamp((time - liveStart) / DUR.a) : clamp((time - tg0) / DUR.a);
+  const et = P.live ? clamp((time - liveStart) / (tg0 - liveStart)) : clamp((time - ta0) / DUR.e);
+  const fade = P.transient ? clamp(1 - (time - (te1 + .2)) / .5) : 1;
+  const o = effect(SIM.m, SIM.a, P, et, fade);
+  const act = byA[SIM.a].name, badgeEnd = P.live ? tg0 + .8 : te1;
+  const badge = at > 0 ? `<g style="opacity:${time < badgeEnd ? Math.min(1, at*2) : clamp(1 - (time - badgeEnd) / .4)}">
+      <rect x="${PX + PW/2 - (act.length*4 + 26)}" y="${PY + 8}" width="${act.length*8 + 52}" height="26" rx="13" style="fill:var(--act)"/>
+      <text x="${PX + PW/2}" y="${PY + 25}" text-anchor="middle" style="font:600 12px 'IBM Plex Sans',sans-serif;fill:#fff">${esc(act)}</text></g>` : '';
+  const gOp = time < tg0 ? 1 : .25 + .75 * clamp(1 - (time - tg0) / 1.2);
+  const svg = document.getElementById('stage');
+  if (svg) svg.innerHTML = plotSVG(o) + panelSVG(o, P, gt, time) + stripSVG(o) + badge + `<g style="opacity:${gOp}">${interaction(byI[SIM.i].name, gt, P)}</g>`;
+  const phase = P.live ? (time < liveStart ? 1 : time < tg0 ? 2 : 3) : (time < tg0 ? 1 : time < ta0 ? 2 : 3);
+  document.querySelectorAll('.simstep').forEach((el, k) => el.classList.toggle('on', P.live && time >= liveStart && time < tg0 ? k < 3 : k + 1 === phase));
+  const bar = document.getElementById('simbar'); if (bar) bar.style.width = (100 * time / TOTAL) + '%';
+}
+function tick(now){
+  if (!SIM.playing) return;
+  const dt = SIM.last ? (now - SIM.last) / 1000 : 0; SIM.last = now;
+  SIM.t += dt;
+  if (SIM.t >= TOTAL){ if (SIM.loop) SIM.t = 0; else { SIM.t = TOTAL; SIM.playing = false; updPlay(); } }
+  frame(SIM.t);
+  if (SIM.playing) SIM.raf = requestAnimationFrame(tick);
+}
+function play(){ if (SIM.t >= TOTAL) SIM.t = 0; SIM.playing = true; SIM.last = 0; updPlay(); cancelAnimationFrame(SIM.raf); SIM.raf = requestAnimationFrame(tick); }
+function pause(){ SIM.playing = false; cancelAnimationFrame(SIM.raf); updPlay(); }
+function updPlay(){ const b = document.getElementById('simplay'); if (b) b.innerHTML = (SIM.playing ? '❚❚ ' + S_.pause : '▶ ' + S_.play); }
+
+/* ---------- controls ---------- */
+function simDefaults(){
+  if (!SIM.a || !byA[SIM.a]) SIM.a = (D.actions.find(a => a.name === 'Filter') || D.actions[0]).id;
+  const rels = aiByA[SIM.a] || [];
+  if (!SIM.i || !byI[SIM.i]) SIM.i = rels.length ? rels[0].i : (D.interactions.find(x => x.name === (STORIES[SIM.a] ? 'key' : 'click')) || D.interactions[0]).id;
+  const mods = (amByA[SIM.a] || []).map(r => r.m);
+  if (!SIM.m || !mods.includes(SIM.m)) SIM.m = mods[0];
+}
+function simStatus(){
+  const r = relFor(SIM.a, SIM.i);
+  if (!r) return `<span class="simtag hypo">${S_.hypo}</span>`;
+  if (r.origin === 'T') return `<span class="simtag team">${S_.team}</span>`;
+  return `<span class="simtag ok">${S_.described(r.impl, srcLabel(r.src))}</span>`;
+}
+function renderSim(){
+  simDefaults();
+  const described = new Set((aiByA[SIM.a] || []).map(r => r.i));
+  const iOpts = ORDER.mod.map(g => {
+    const items = D.interactions.filter(x => x.dims.mod === g);
+    return items.length ? `<optgroup label="${esc(val(g))}">${items.map(x => `<option value="${x.id}" ${x.id === SIM.i ? 'selected' : ''}>${described.has(x.id) ? '● ' : '○ '}${esc(x.name)}</option>`).join('')}</optgroup>` : '';
+  }).join('');
+  const aOpts = ORDER.intent.map(g => {
+    const items = D.actions.filter(x => x.dims.intent === g);
+    return items.length ? `<optgroup label="${esc(val(g))}">${items.map(x => `<option value="${x.id}" ${x.id === SIM.a ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</optgroup>` : '';
+  }).join('');
+  const mOpts = (amByA[SIM.a] || []).map(r => `<option value="${r.m}" ${r.m === SIM.m ? 'selected' : ''}>${esc(byO[r.m].name)}</option>`).join('');
+  const P = plan(SIM.a, SIM.i), story = S_.story[SIM.a];
+  main.innerHTML = `<div class="wrap page sim">
+    <section class="simhead"><h2>${S_.title}</h2><p>${S_.lead}</p></section>
+    <div class="simgrid">
+      <div class="simctl">
+        <label class="simpick i"><span>${ic('level_i')}${S_.pickI}</span><select id="sim-i">${iOpts}</select></label>
+        <label class="simpick a"><span>${ic('level_a')}${S_.pickA}</span><select id="sim-a">${aOpts}</select></label>
+        <label class="simpick o"><span>${ic('level_o')}${S_.pickM}</span><select id="sim-m">${mOpts}</select></label>
+        <p class="simnote">${S_.dot}</p>
+        <div class="simbtns"><button type="button" id="simplay" class="simplay"></button>
+          <label class="simloop"><input type="checkbox" id="simloop" ${SIM.loop ? 'checked' : ''}> ${S_.loop}</label></div>
+        <button type="button" id="simrand" class="clear">${S_.random}</button>
+        <div class="simstatus">${simStatus()}<span class="loc">${S_.onw[P.surface] || ''} · ${S_.roleLab[P.role]}${P.live ? ' · continuous' : ''}</span></div>
+      </div>
+      <figure class="simstage">
+        <svg id="stage" viewBox="0 0 600 345" role="img" aria-label="${esc(S_.title)}"></svg>
+        <div class="simprog"><i id="simbar"></i></div>
+        <div class="simsteps">
+          <span class="simstep i">${ic(byI[SIM.i].dims.mod)}<b>${S_.step1}</b> ${esc(byI[SIM.i].name)}</span><span class="sep">→</span>
+          <span class="simstep a">${ic(byA[SIM.a].dims.intent)}<b>${S_.step2}</b> ${esc(byA[SIM.a].name)}</span><span class="sep">→</span>
+          <span class="simstep o">${ic(byO[SIM.m].whereKey)}<b>${S_.step3}</b> ${esc(byO[SIM.m].name)}</span>
+        </div>
+        <p class="simread ${P.weak ? 'weak' : ''}"><b>${S_.reading}${P.weak ? ` · ${S_.weak}` : ''}</b>${esc(P.reading)}</p>
+        ${story ? `<p class="simstory">${esc(story)}</p>` : ''}
+      </figure>
+    </div></div>`;
+  backdrop.classList.remove('on');
+  updPlay();
+  frame(SIM.t || 0);
+  const onSel = (id, fn) => document.getElementById(id).addEventListener('change', e => { fn(e.target.value); SIM.t = 0; renderSim(); play(); });
+  onSel('sim-i', v => { SIM.i = v; });
+  onSel('sim-a', v => { SIM.a = v; SIM.m = null; const r = aiByA[v]; if (r && !r.some(x => x.i === SIM.i)) SIM.i = r[0].i; });
+  onSel('sim-m', v => { SIM.m = v; });
+  document.getElementById('simplay').onclick = () => SIM.playing ? pause() : play();
+  document.getElementById('simloop').onchange = e => { SIM.loop = e.target.checked; };
+  document.getElementById('simrand').onclick = () => { const pool = D.ai.filter(x => x.origin !== 'T'), r = pool[Math.floor(Math.random() * pool.length)]; SIM.a = r.a; SIM.i = r.i; SIM.m = null; SIM.t = 0; renderSim(); play(); };
+}
+function openSim(t, id){
+  pause(); SIM.t = 0;
+  if (t === 'a'){ SIM.a = id; SIM.i = null; SIM.m = null; }
+  if (t === 'i'){ const r = (aiByI[id] || [])[0]; SIM.i = id; SIM.a = r ? r.a : (SIM.a || D.actions[0].id); SIM.m = null; }
+  if (t === 'o'){ const r = (amByO[id] || [])[0]; SIM.a = r.a; SIM.m = id; SIM.i = null; }
+  st.tab = 'sim'; render(); play();
+}
+
+/* ---------------- render + events */
+function render(){
+  index(); renderHeader();
+  if(st.tab!=='sim' && typeof pause==='function') pause();
+  if(st.tab==='explore') renderExplore(); else if(st.tab==='sim') renderSim(); else if(st.tab==='dims') renderDims(); else renderSources();
+}
+function select(t,id){
+  st.sel = (st.sel && st.sel.t===t && st.sel.id===id) ? null : {t,id};
+  if(st.sel) st.col = t;
+  renderExplore();
+  const d = document.getElementById('detail'); if(d) d.scrollTop = 0;
+  if(st.sel){ const el = document.querySelector('[id="it-'+id+'"]'); if(el && window.innerWidth>760) el.scrollIntoView({block:'nearest'}); }
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('button,[data-lang]');
+  if(e.target.id==='backdrop'){ st.sel=null; renderExplore(); return; }
+  if(!b) return;
+  if(b.dataset.tab){ st.tab = b.dataset.tab; render(); if(st.tab==='sim'){ SIM.t=0; play(); } return; }
+  if(b.dataset.g || b.dataset.g2){
+    const which = b.dataset.g ? 'g' : 'g2', t = b.dataset.g || b.dataset.g2, n = dimsOf(t).length;
+    st[which][t] = (st[which][t] + Number(b.dataset.step) + n) % n;
+    if(st.g[t] === st.g2[t]) st.g2[t] = (st.g2[t] + 1) % n;
+    renderExplore(); return; }
+  if(b.dataset.col){ st.col = b.dataset.col; renderExplore(); return; }
+  if(b.dataset.simt){ openSim(b.dataset.simt, b.dataset.simid); return; }
+  if(b.id==='clear' || b.id==='close'){ st.sel = null; renderExplore(); return; }
+  if(b.dataset.t && b.dataset.id){ if(st.tab!=='explore'){ st.tab='explore'; render(); } select(b.dataset.t, b.dataset.id); }
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && st.sel){ st.sel=null; renderExplore(); } });
+window.addEventListener('resize', ()=>backdrop.classList.toggle('on', !!st.sel && st.tab==='explore' && window.innerWidth<=1180));
+
+index();
+if(window.innerWidth>1180){ const f = D.actions.find(a=>a.name==='Filter'); if(f) st.sel = {t:'a', id:f.id}; }
+render();
+})();
+</script>
+
+</body>
+</html>
